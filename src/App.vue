@@ -1,7 +1,7 @@
 <template>
   <main>
     <h1>My Personal Website</h1>
-    <p>Built with Vue.js 🚀</p>
+    <p>Built with Vue.js</p>
   </main>
 </template>
 
