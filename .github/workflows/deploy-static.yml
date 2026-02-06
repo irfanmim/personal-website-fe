@@ -1,0 +1,53 @@
+name: Build and Deploy Static Website
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout source repository
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      # 2. Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Build static files
+      - name: Build project
+        run: npm run build
+        # Make sure this outputs to dist/ or build/
+
+      # 5. Clone static repository
+      - name: Clone static repository
+        run: |
+          git clone https://x-access-token:${{ secrets.STATIC_REPO_TOKEN }}@github.com/irfanmim/personal-website-fe-static.git static-repo
+
+      # 6. Replace static repo contents with new build
+      - name: Copy build output
+        run: |
+          rm -rf static-repo/*
+          cp -r dist/* static-repo/
+          # if your build folder is "build/", replace dist with build
+
+      # 7. Commit and push changes
+      - name: Commit and push
+        run: |
+          cd static-repo
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "Deploy static build from ${GITHUB_SHA}" || echo "No changes to commit"
+          git push
