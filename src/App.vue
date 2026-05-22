@@ -1,7 +1,7 @@
 <template>
   <main>
     <h1>My Personal Website</h1>
-    <p>Built with Vue.js</p>
+    <p>Software Engineer | Product Manager</p>
   </main>
 </template>
 
