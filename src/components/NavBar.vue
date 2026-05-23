@@ -2,6 +2,7 @@
   <nav class="navbar">
     <span class="nav-name">{{ name }}</span>
     <div class="nav-right">
+      <!-- desktop links -->
       <div class="nav-links">
         <a
           v-for="link in links"
@@ -28,35 +29,47 @@
           </span>
         </span>
       </button>
+      <!-- hamburger -->
+      <button class="hamburger" :class="{ 'hamburger--open': menuOpen }" @click="menuOpen = !menuOpen" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
   </nav>
+
+  <!-- mobile menu -->
+  <Transition name="menu">
+    <div v-if="menuOpen" class="mobile-menu">
+      <a
+        v-for="link in links"
+        :key="link.label"
+        :href="link.href"
+        class="mobile-link"
+        :class="{ 'mobile-link--active': link.href === '#' + activeSection }"
+        @click="handleMobileLink($event, link)"
+      >
+        {{ link.label }}
+      </a>
+    </div>
+  </Transition>
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
 defineProps({
-  name: {
-    type: String,
-    required: true,
-  },
-  links: {
-    type: Array,
-    default: () => [],
-  },
-  activeSection: {
-    type: String,
-    default: '',
-  },
-  isDark: {
-    type: Boolean,
-    default: false,
-  },
+  name: { type: String, required: true },
+  links: { type: Array, default: () => [] },
+  activeSection: { type: String, default: '' },
+  isDark: { type: Boolean, default: false },
 })
 
 defineEmits(['toggleDark'])
 
-import { useRouter } from 'vue-router'
-
 const router = useRouter()
+const menuOpen = ref(false)
 
 function scrollTo(e, id) {
   e.preventDefault()
@@ -65,6 +78,13 @@ function scrollTo(e, id) {
     el.scrollIntoView({ behavior: 'smooth' })
   } else {
     router.push({ path: '/', query: { scrollTo: id } })
+  }
+}
+
+function handleMobileLink(e, link) {
+  menuOpen.value = false
+  if (link.href.startsWith('#')) {
+    scrollTo(e, link.href.slice(1))
   }
 }
 </script>
@@ -89,15 +109,13 @@ function scrollTo(e, id) {
   gap: 16px;
 }
 
-.nav-separator {
-  width: 1px;
-  height: 16px;
-  background: var(--color-border);
+/* ── Desktop links (hidden on mobile) ── */
+.nav-links {
+  display: none;
 }
 
-.nav-links {
-  display: flex;
-  gap: 16px;
+.nav-separator {
+  display: none;
 }
 
 .nav-link {
@@ -130,6 +148,7 @@ function scrollTo(e, id) {
   font-weight: 500;
 }
 
+/* ── Theme toggle ── */
 .theme-toggle {
   background: none;
   border: none;
@@ -184,6 +203,75 @@ function scrollTo(e, id) {
   color: #ffffff;
 }
 
+/* ── Hamburger ── */
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 24px;
+  height: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.hamburger span {
+  display: block;
+  width: 100%;
+  height: 1.5px;
+  background: var(--color-text);
+  border-radius: 2px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  transform-origin: center;
+}
+
+.hamburger--open span:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+
+.hamburger--open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger--open span:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
+/* ── Mobile menu ── */
+.mobile-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--color-border);
+  padding: 8px 0 16px;
+}
+
+.mobile-link {
+  font-size: 0.95rem;
+  color: var(--color-text);
+  text-decoration: none;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mobile-link--active {
+  font-weight: 500;
+}
+
+.menu-enter-active,
+.menu-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.menu-enter-from,
+.menu-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+/* ── Desktop (≥ 640px) ── */
 @media (min-width: 640px) {
   .navbar {
     padding: 28px 0;
@@ -195,7 +283,23 @@ function scrollTo(e, id) {
   }
 
   .nav-links {
+    display: flex;
     gap: 24px;
+  }
+
+  .nav-separator {
+    display: block;
+    width: 1px;
+    height: 16px;
+    background: var(--color-border);
+  }
+
+  .hamburger {
+    display: none;
+  }
+
+  .mobile-menu {
+    display: none;
   }
 }
 </style>
