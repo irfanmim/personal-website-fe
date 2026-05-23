@@ -13,9 +13,19 @@
           {{ link.label }}
         </a>
       </div>
-      <button class="theme-toggle" @click="$emit('toggleDark')" :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
-        <span v-if="isDark">&#9728;</span>
-        <span v-else>&#9790;</span>
+      <span class="nav-separator"></span>
+      <button
+        class="theme-toggle"
+        :class="{ 'theme-toggle--dark': isDark }"
+        @click="$emit('toggleDark')"
+        :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+      >
+        <span class="toggle-track">
+          <span class="toggle-thumb">
+            <span v-if="isDark">&#9728;</span>
+            <span v-else>&#9790;</span>
+          </span>
+        </span>
       </button>
     </div>
   </nav>
@@ -61,7 +71,13 @@ defineEmits(['toggleDark'])
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
+}
+
+.nav-separator {
+  width: 1px;
+  height: 16px;
+  background: var(--color-border);
 }
 
 .nav-links {
@@ -103,19 +119,53 @@ defineEmits(['toggleDark'])
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.1rem;
-  color: var(--color-text);
-  padding: 4px;
-  line-height: 1;
-  margin-left: 4px;
+  padding: 0;
   display: flex;
   align-items: center;
-  opacity: 0.65;
   transition: opacity 0.15s;
 }
 
 .theme-toggle:hover {
-  opacity: 1;
+  opacity: 0.8;
+}
+
+.toggle-track {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  border-radius: 999px;
+  background: #d1d5db;
+  border: 1.5px solid #b0b4bb;
+  transition: background 0.25s, border-color 0.25s;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.theme-toggle--dark .toggle-track {
+  background: #2a2a2a;
+  border-color: #555;
+}
+
+.toggle-thumb {
+  position: absolute;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.theme-toggle--dark .toggle-thumb {
+  transform: translateX(24px);
+  background: #444;
 }
 
 @media (min-width: 640px) {
