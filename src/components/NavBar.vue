@@ -134,8 +134,8 @@ defineEmits(['toggleDark'])
   width: 52px;
   height: 28px;
   border-radius: 999px;
-  background: #d1d5db;
-  border: 1.5px solid #b0b4bb;
+  background: #475569;
+  border: 2px solid #334155;
   transition: background 0.25s, border-color 0.25s;
   display: flex;
   align-items: center;
@@ -143,8 +143,8 @@ defineEmits(['toggleDark'])
 }
 
 .theme-toggle--dark .toggle-track {
-  background: #2a2a2a;
-  border-color: #555;
+  background: #f1f5f9;
+  border-color: #e2e8f0;
 }
 
 .toggle-thumb {
@@ -154,7 +154,7 @@ defineEmits(['toggleDark'])
   height: 20px;
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
   transition: transform 0.25s ease;
   display: flex;
   align-items: center;
@@ -165,7 +165,8 @@ defineEmits(['toggleDark'])
 
 .theme-toggle--dark .toggle-thumb {
   transform: translateX(24px);
-  background: #444;
+  background: #334155;
+  color: #ffffff;
 }
 
 @media (min-width: 640px) {
