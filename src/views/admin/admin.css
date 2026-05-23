@@ -1,0 +1,195 @@
+/* Shared admin styles — all scoped under .admin-layout to prevent bleed into the public site */
+
+.admin-layout {
+  font-family: system-ui, Arial, sans-serif;
+}
+
+/* ── Editor shell ─────────────────────────────────────── */
+.admin-layout .editor {
+  max-width: 780px;
+}
+
+.admin-layout .editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.admin-layout .editor-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.admin-layout .editor-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Cards ────────────────────────────────────────────── */
+.admin-layout .card {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.admin-layout .card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-layout .card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  padding-top: 2px;
+}
+
+/* ── Form fields ──────────────────────────────────────── */
+.admin-layout .field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.admin-layout .field-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.admin-layout .field-input,
+.admin-layout .field-textarea {
+  border: 1px solid #e0e0e0;
+  border-radius: 7px;
+  padding: 9px 13px;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  outline: none;
+  font-family: system-ui, Arial, sans-serif;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.admin-layout .field-input:focus,
+.admin-layout .field-textarea:focus {
+  border-color: #1a1a1a;
+  box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.06);
+}
+
+.admin-layout .field-textarea {
+  resize: vertical;
+  min-height: 96px;
+  line-height: 1.6;
+}
+
+.admin-layout .field-hint {
+  font-size: 0.76rem;
+  color: #aaa;
+}
+
+/* ── Buttons ──────────────────────────────────────────── */
+.admin-layout .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  border-radius: 7px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: system-ui, Arial, sans-serif;
+  transition: opacity 0.15s, background 0.15s;
+  border: none;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.admin-layout .btn:hover {
+  opacity: 0.82;
+}
+
+.admin-layout .btn-primary {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.admin-layout .btn-ghost {
+  background: #fff;
+  color: #444;
+  border: 1px solid #e0e0e0;
+}
+
+.admin-layout .btn-ghost:hover {
+  background: #f9f9f9;
+  opacity: 1;
+}
+
+.admin-layout .btn-danger {
+  background: #fff5f5;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.admin-layout .btn-danger:hover {
+  background: #fef2f2;
+  opacity: 1;
+}
+
+.admin-layout .btn-sm {
+  padding: 5px 11px;
+  font-size: 0.78rem;
+  border-radius: 6px;
+}
+
+.admin-layout .btn-full {
+  width: 100%;
+}
+
+/* ── Divider ──────────────────────────────────────────── */
+.admin-layout .divider {
+  height: 1px;
+  background: #f0f0f0;
+  margin: 2px 0;
+}
+
+/* ── Toast notification ───────────────────────────────── */
+.admin-layout .toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: #1a1a1a;
+  color: #fff;
+  padding: 11px 20px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  z-index: 200;
+}
+
+.toast-enter-active,
+.toast-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(6px);
+}
