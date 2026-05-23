@@ -7,13 +7,16 @@
         <div class="company-list">
           <div class="company-item" v-for="c in exp.companies" :key="c.company + c.period">
             <div class="company-meta">
-              <span class="company-name">{{ c.company }}</span>
+              <span class="company-name">{{ c.summary }}</span>
               <span class="company-period">{{ c.period }}</span>
             </div>
-            <p class="company-summary">{{ c.summary }}</p>
+            <p class="company-summary">{{ c.company }}</p>
           </div>
         </div>
       </div>
+    </div>
+    <div v-if="viewMoreUrl" class="view-more-wrap">
+      <a :href="viewMoreUrl" class="view-more">View More →</a>
     </div>
   </section>
 </template>
@@ -23,6 +26,10 @@ defineProps({
   experiences: {
     type: Array,
     required: true,
+  },
+  viewMoreUrl: {
+    type: String,
+    default: '',
   },
 })
 </script>
@@ -108,6 +115,27 @@ defineProps({
     white-space: nowrap;
     flex-shrink: 0;
   }
+}
+
+.view-more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.view-more {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-tag-text);
+  text-decoration: none;
+  border: 1.5px solid var(--color-tag-text);
+  border-radius: 8px;
+  padding: 8px 24px;
+  transition: opacity 0.15s;
+}
+
+.view-more:hover {
+  opacity: 0.7;
 }
 
 @media (min-width: 1024px) {

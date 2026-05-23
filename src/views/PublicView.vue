@@ -9,7 +9,7 @@
     />
     <HeroSection id="home" :role="content.hero.role" />
     <ProjectsSection id="projects" :projects="content.projects" view-all-url="/projects" />
-    <ExperienceSection id="experience" :experiences="content.experiences" />
+    <ExperienceSection id="experience" :experiences="content.experiences" :view-more-url="content.contact.linkedin" />
     <AboutContactSection
       id="about"
       :bio="content.about.bio"
