@@ -32,9 +32,10 @@ defineProps({
 }
 
 .section-title {
-  font-size: 1.2rem;
-  font-weight: 400;
-  margin-bottom: 20px;
+  font-size: 1.25rem;
+  font-weight: 500;
+  
+  margin-bottom: 24px;
 }
 
 .cards {
@@ -56,8 +57,8 @@ defineProps({
   }
 
   .section-title {
-    font-size: 1.3rem;
-    margin-bottom: 28px;
+    font-size: 1.4rem;
+    margin-bottom: 32px;
   }
 
   .cards {
