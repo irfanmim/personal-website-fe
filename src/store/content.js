@@ -10,7 +10,7 @@ const defaults = {
     role: 'Software Engineer | Product Manager | Sports Enthusiast.',
   },
   about: {
-    bio: 'I thrive at the intersection of technology and people — combining a technical mindset with a strong product instinct to build things users actually want and businesses actually need. Whether shaping strategy or working closely with dev teams, I stay focused on outcomes that matter.',
+    bio: 'Software engineer and product manager who combines technical depth with product instinct — focused on building things users actually want and delivering outcomes that matter.',
   },
   projects: defaultProjects,
   experiences: defaultExperiences,

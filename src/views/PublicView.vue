@@ -9,10 +9,10 @@
     />
     <HeroSection id="home" :role="content.hero.role" />
     <ProjectsSection id="projects" :projects="content.projects" view-all-url="/projects" />
-    <AboutSection id="about" :bio="content.about.bio" />
     <ExperienceSection id="experience" :experiences="content.experiences" />
-    <ContactSection
-      id="contact"
+    <AboutContactSection
+      id="about"
+      :bio="content.about.bio"
       :linkedin="content.contact.linkedin"
       :github="content.contact.github"
       :instagram="content.contact.instagram"
@@ -24,10 +24,9 @@
 <script setup>
 import NavBar from '../components/NavBar.vue'
 import HeroSection from '../components/HeroSection.vue'
-import AboutSection from '../components/AboutSection.vue'
 import ExperienceSection from '../components/ExperienceSection.vue'
 import ProjectsSection from '../components/ProjectsSection.vue'
-import ContactSection from '../components/ContactSection.vue'
+import AboutContactSection from '../components/AboutContactSection.vue'
 
 import { content } from '../store/content.js'
 import { useDarkMode } from '../composables/useDarkMode.js'
@@ -36,13 +35,12 @@ import { useActiveSection } from '../composables/useActiveSection.js'
 const navLinks = [
   { label: 'Home',       href: '/' },
   { label: 'Projects',   href: '/projects' },
-  { label: 'About',      href: '#about' },
   { label: 'Experience', href: '#experience' },
-  { label: 'Contact',    href: '#contact' },
+  { label: 'About',      href: '#about' },
 ]
 
 const { isDark, toggle } = useDarkMode()
-const sectionIds = ['home', 'projects', 'about', 'experience', 'contact']
+const sectionIds = ['home', 'projects', 'experience', 'about']
 const { activeSection } = useActiveSection(sectionIds)
 </script>
 
