@@ -15,6 +15,7 @@
         </div>
       </div>
     </div>
+    <p v-if="viewMoreUrl" class="more-hint">and more...</p>
     <div v-if="viewMoreUrl" class="view-more-wrap">
       <a :href="viewMoreUrl" class="view-more">View More →</a>
     </div>
@@ -36,29 +37,29 @@ defineProps({
 
 <style scoped>
 .experience {
-  padding-bottom: 48px;
+  padding-bottom: 56px;
 }
 
 .section-title {
   font-size: 1.25rem;
   font-weight: 500;
-  margin-bottom: 32px;
+  margin-bottom: 12px;
 }
 
 .entries {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 24px;
 }
 
 .entry {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 
 .role-label {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--color-text);
 }
@@ -66,8 +67,8 @@ defineProps({
 .company-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding-left: 24px;
+  gap: 12px;
+  padding-left: 16px;
   border-left: 2px solid var(--color-rail);
   margin-left: 4px;
 }
@@ -75,13 +76,13 @@ defineProps({
 .company-item {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 2px;
 }
 
 .company-meta {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .company-name {
@@ -117,10 +118,17 @@ defineProps({
   }
 }
 
+.more-hint {
+  font-size: 0.82rem;
+  color: var(--color-text-dim);
+  font-style: italic;
+  margin: 12px 0 4px;
+}
+
 .view-more-wrap {
   display: flex;
   justify-content: center;
-  margin-top: 28px;
+  margin-top: 16px;
 }
 
 .view-more {
@@ -140,12 +148,12 @@ defineProps({
 
 @media (min-width: 1024px) {
   .experience {
-    padding-bottom: 60px;
+    padding-bottom: 72px;
   }
 
   .section-title {
     font-size: 1.4rem;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
   }
 }
 </style>
