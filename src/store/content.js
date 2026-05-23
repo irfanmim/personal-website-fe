@@ -17,6 +17,7 @@ const defaults = {
   contact: {
     linkedin: 'https://linkedin.com/in/irfanmim',
     github: 'https://github.com/irfanmim',
+    instagram: 'http://instagram.com/irfanmim',
     cvUrl: '',
   },
 }

@@ -15,6 +15,7 @@
       id="contact"
       :linkedin="content.contact.linkedin"
       :github="content.contact.github"
+      :instagram="content.contact.instagram"
       :cv-url="content.contact.cvUrl"
     />
   </div>

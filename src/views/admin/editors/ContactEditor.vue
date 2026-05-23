@@ -28,6 +28,16 @@
         />
       </div>
       <div class="field">
+        <label class="field-label">Instagram URL</label>
+        <input
+          v-model="local.instagram"
+          type="url"
+          class="field-input"
+          placeholder="https://instagram.com/yourhandle"
+        />
+        <span class="field-hint">Leave blank to hide the Instagram link.</span>
+      </div>
+      <div class="field">
         <label class="field-label">CV / Resume URL</label>
         <input
           v-model="local.cvUrl"

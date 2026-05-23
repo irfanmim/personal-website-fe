@@ -5,6 +5,7 @@
     <div class="links">
       <a :href="linkedin" target="_blank" rel="noopener" class="link">LinkedIn</a>
       <a :href="github" target="_blank" rel="noopener" class="link">GitHub</a>
+      <a v-if="instagram" :href="instagram" target="_blank" rel="noopener" class="link">Instagram</a>
     </div>
     <a v-if="cvUrl" :href="cvUrl" download class="cv-btn">Download CV</a>
     <p class="footer-note">© {{ year }}</p>
@@ -22,6 +23,10 @@ defineProps({
   github: {
     type: String,
     required: true,
+  },
+  instagram: {
+    type: String,
+    default: '',
   },
   cvUrl: {
     type: String,
