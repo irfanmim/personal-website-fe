@@ -48,7 +48,13 @@ defineProps({
   font-size: 1rem;
   color: var(--color-text-muted);
   line-height: 1.8;
-  max-width: 62.5%;
+  max-width: 100%;
+}
+
+@media (min-width: 768px) {
+  .bio {
+    max-width: 62.5%;
+  }
 }
 
 .contact {
