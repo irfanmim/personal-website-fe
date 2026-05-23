@@ -1,6 +1,43 @@
 <template>
-  <RouterView />
+  <div v-if="showNav" class="nav-container">
+    <NavBar
+      :name="content.hero.name"
+      :links="navLinks"
+      :active-section="activeSection"
+      :is-dark="isDark"
+      @toggle-dark="toggle"
+    />
+  </div>
+  <RouterView v-slot="{ Component }">
+    <Transition name="page" mode="out-in">
+      <component :is="Component" />
+    </Transition>
+  </RouterView>
 </template>
+
+<script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import NavBar from './components/NavBar.vue'
+import { content } from './store/content.js'
+import { useDarkMode } from './composables/useDarkMode.js'
+import { useActiveSection } from './composables/useActiveSection.js'
+
+const route = useRoute()
+const { isDark, toggle } = useDarkMode()
+
+const sectionIds = ['home', 'projects', 'experience', 'about']
+const { activeSection } = useActiveSection(sectionIds, () => route.path)
+
+const showNav = computed(() => !route.path.startsWith('/admin'))
+
+const navLinks = [
+  { label: 'Home',       href: '/#/' },
+  { label: 'Projects',   href: '/#/projects' },
+  { label: 'Experience', href: '#experience' },
+  { label: 'About',      href: '#about' },
+]
+</script>
 
 <style>
 :root {
@@ -60,5 +97,37 @@ body {
   background: var(--color-bg);
   transition: background 0.2s, color 0.2s;
 }
-</style>
 
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+@media (min-width: 640px) {
+  .nav-container {
+    padding: 0 48px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav-container {
+    padding: 0 80px;
+  }
+}
+
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+</style>

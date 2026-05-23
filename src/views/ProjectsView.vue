@@ -1,13 +1,5 @@
 <template>
   <div class="projects-page">
-    <NavBar
-      :name="content.hero.name"
-      :links="navLinks"
-      :active-section="''"
-      :is-dark="isDark"
-      @toggle-dark="toggle"
-    />
-
     <main class="page-content">
       <h1 class="page-title">Projects</h1>
 
@@ -47,19 +39,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import NavBar from '../components/NavBar.vue'
 import { content } from '../store/content.js'
-import { useDarkMode } from '../composables/useDarkMode.js'
-
-const { isDark, toggle } = useDarkMode()
-
-const navLinks = [
-  { label: 'Home',       href: '/#/' },
-  { label: 'Projects',   href: '/#/projects' },
-  { label: 'About',      href: '/#/' },
-  { label: 'Experience', href: '/#/' },
-  { label: 'Contact',    href: '/#/' },
-]
 
 const visibleCount = ref(6)
 
