@@ -134,8 +134,8 @@ defineEmits(['toggleDark'])
   width: 52px;
   height: 28px;
   border-radius: 999px;
-  background: #475569;
-  border: 2px solid #334155;
+  background: #cbd5e1;
+  border: 2px solid #94a3b8;
   transition: background 0.25s, border-color 0.25s;
   display: flex;
   align-items: center;
