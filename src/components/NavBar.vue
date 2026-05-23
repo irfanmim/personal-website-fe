@@ -54,9 +54,18 @@ defineProps({
 
 defineEmits(['toggleDark'])
 
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
 function scrollTo(e, id) {
   e.preventDefault()
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  const el = document.getElementById(id)
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' })
+  } else {
+    router.push({ path: '/', query: { scrollTo: id } })
+  }
 }
 </script>
 

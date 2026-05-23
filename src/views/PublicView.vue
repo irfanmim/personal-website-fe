@@ -15,11 +15,26 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import HeroSection from '../components/HeroSection.vue'
 import ExperienceSection from '../components/ExperienceSection.vue'
 import ProjectsSection from '../components/ProjectsSection.vue'
 import AboutContactSection from '../components/AboutContactSection.vue'
 import { content } from '../store/content.js'
+
+const route = useRoute()
+const router = useRouter()
+
+onMounted(() => {
+  const target = route.query.scrollTo
+  if (target) {
+    router.replace({ path: '/' })
+    setTimeout(() => {
+      document.getElementById(target)?.scrollIntoView({ behavior: 'smooth' })
+    }, 250)
+  }
+})
 </script>
 
 <style scoped>
