@@ -8,7 +8,7 @@
       @toggle-dark="toggle"
     />
     <HeroSection id="home" :role="content.hero.role" />
-    <ProjectsSection id="projects" :projects="content.projects" view-all-url="/projects" />
+    <ProjectsSection id="projects" :projects="content.projects" view-all-url="/#/projects" />
     <ExperienceSection id="experience" :experiences="content.experiences" :view-more-url="content.contact.linkedin" />
     <AboutContactSection
       id="about"
@@ -33,8 +33,8 @@ import { useDarkMode } from '../composables/useDarkMode.js'
 import { useActiveSection } from '../composables/useActiveSection.js'
 
 const navLinks = [
-  { label: 'Home',       href: '/' },
-  { label: 'Projects',   href: '/projects' },
+  { label: 'Home',       href: '/#/' },
+  { label: 'Projects',   href: '/#/projects' },
   { label: 'Experience', href: '#experience' },
   { label: 'About',      href: '#about' },
 ]

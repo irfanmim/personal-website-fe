@@ -54,11 +54,11 @@ import { useDarkMode } from '../composables/useDarkMode.js'
 const { isDark, toggle } = useDarkMode()
 
 const navLinks = [
-  { label: 'Home',       href: '/' },
-  { label: 'Projects',   href: '/projects' },
-  { label: 'About',      href: '/#about' },
-  { label: 'Experience', href: '/#experience' },
-  { label: 'Contact',    href: '/#contact' },
+  { label: 'Home',       href: '/#/' },
+  { label: 'Projects',   href: '/#/projects' },
+  { label: 'About',      href: '/#/' },
+  { label: 'Experience', href: '/#/' },
+  { label: 'Contact',    href: '/#/' },
 ]
 
 const visibleCount = ref(6)

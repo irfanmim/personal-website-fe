@@ -9,6 +9,7 @@
           :href="link.href"
           class="nav-link"
           :class="{ 'nav-link--active': link.href === '#' + activeSection }"
+          @click="link.href.startsWith('#') ? scrollTo($event, link.href.slice(1)) : null"
         >
           {{ link.label }}
         </a>
@@ -52,6 +53,11 @@ defineProps({
 })
 
 defineEmits(['toggleDark'])
+
+function scrollTo(e, id) {
+  e.preventDefault()
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+}
 </script>
 
 <style scoped>
