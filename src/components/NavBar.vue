@@ -2,7 +2,6 @@
   <nav class="navbar">
     <span class="nav-name">{{ name }}</span>
     <div class="nav-right">
-      <!-- desktop links -->
       <div class="nav-links">
         <a
           v-for="link in links"
@@ -29,8 +28,7 @@
           </span>
         </span>
       </button>
-      <!-- hamburger -->
-      <button class="hamburger" :class="{ 'hamburger--open': menuOpen }" @click="menuOpen = !menuOpen" aria-label="Toggle menu">
+      <button class="hamburger" @click="menuOpen = true" aria-label="Open menu">
         <span></span>
         <span></span>
         <span></span>
@@ -38,19 +36,29 @@
     </div>
   </nav>
 
-  <!-- mobile menu -->
-  <Transition name="menu">
-    <div v-if="menuOpen" class="mobile-menu">
-      <a
-        v-for="link in links"
-        :key="link.label"
-        :href="link.href"
-        class="mobile-link"
-        :class="{ 'mobile-link--active': link.href === '#' + activeSection }"
-        @click="handleMobileLink($event, link)"
-      >
-        {{ link.label }}
-      </a>
+  <!-- Backdrop -->
+  <Transition name="backdrop">
+    <div v-if="menuOpen" class="drawer-backdrop" @click="menuOpen = false" />
+  </Transition>
+
+  <!-- Drawer -->
+  <Transition name="drawer">
+    <div v-if="menuOpen" class="drawer">
+      <div class="drawer-header">
+        <button class="drawer-close" @click="menuOpen = false" aria-label="Close menu">&#x2715;</button>
+      </div>
+      <nav class="drawer-links">
+        <a
+          v-for="link in links"
+          :key="link.label"
+          :href="link.href"
+          class="drawer-link"
+          :class="{ 'drawer-link--active': link.href === '#' + activeSection }"
+          @click="handleMobileLink($event, link)"
+        >
+          {{ link.label }}
+        </a>
+      </nav>
     </div>
   </Transition>
 </template>
@@ -109,7 +117,7 @@ function handleMobileLink(e, link) {
   gap: 16px;
 }
 
-/* ── Desktop links (hidden on mobile) ── */
+/* ── Desktop links ── */
 .nav-links {
   display: none;
 }
@@ -223,52 +231,94 @@ function handleMobileLink(e, link) {
   height: 1.5px;
   background: var(--color-text);
   border-radius: 2px;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-  transform-origin: center;
 }
 
-.hamburger--open span:nth-child(1) {
-  transform: translateY(6.5px) rotate(45deg);
+/* ── Backdrop ── */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 100;
 }
 
-.hamburger--open span:nth-child(2) {
+.backdrop-enter-active,
+.backdrop-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.backdrop-enter-from,
+.backdrop-leave-to {
   opacity: 0;
 }
 
-.hamburger--open span:nth-child(3) {
-  transform: translateY(-6.5px) rotate(-45deg);
-}
-
-/* ── Mobile menu ── */
-.mobile-menu {
+/* ── Drawer ── */
+.drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 72%;
+  max-width: 300px;
+  height: 100dvh;
+  background: var(--color-bg);
+  z-index: 101;
   display: flex;
   flex-direction: column;
-  gap: 0;
-  border-top: 1px solid var(--color-border);
-  padding: 8px 0 16px;
+  padding: 24px;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
 }
 
-.mobile-link {
-  font-size: 0.95rem;
+.drawer-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 40px;
+}
+
+.drawer-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  padding: 4px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.drawer-close:hover {
+  color: var(--color-text);
+}
+
+.drawer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.drawer-link {
+  font-size: 1.05rem;
   color: var(--color-text);
   text-decoration: none;
-  padding: 12px 0;
+  padding: 14px 0;
   border-bottom: 1px solid var(--color-border);
+  transition: opacity 0.15s;
 }
 
-.mobile-link--active {
+.drawer-link:hover {
+  opacity: 0.6;
+}
+
+.drawer-link--active {
   font-weight: 500;
 }
 
-.menu-enter-active,
-.menu-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+.drawer-enter-active,
+.drawer-leave-active {
+  transition: transform 0.3s ease;
 }
 
-.menu-enter-from,
-.menu-leave-to {
-  opacity: 0;
-  transform: translateY(-8px);
+.drawer-enter-from,
+.drawer-leave-to {
+  transform: translateX(-100%);
 }
 
 /* ── Desktop (≥ 640px) ── */
@@ -295,10 +345,6 @@ function handleMobileLink(e, link) {
   }
 
   .hamburger {
-    display: none;
-  }
-
-  .mobile-menu {
     display: none;
   }
 }
