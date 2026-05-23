@@ -1,7 +1,7 @@
 <template>
   <main>
     <h1>My Personal Website</h1>
-    <p>Software Engineer | Product Manager</p>
+    <p>Software Engineer | Product Manager | Sports Enthusiast</p>
   </main>
 </template>
 
