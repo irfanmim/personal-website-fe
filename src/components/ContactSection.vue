@@ -36,8 +36,6 @@ defineProps({
   padding: 64px 0 48px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
   gap: 20px;
 }
 
@@ -54,7 +52,6 @@ defineProps({
 .links {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 20px;
 }
 
