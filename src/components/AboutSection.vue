@@ -16,7 +16,7 @@ defineProps({
 
 <style scoped>
 .about {
-  padding-bottom: 64px;
+  padding-bottom: 48px;
 }
 
 .section-title {
@@ -34,7 +34,7 @@ defineProps({
 
 @media (min-width: 1024px) {
   .about {
-    padding-bottom: 80px;
+    padding-bottom: 60px;
   }
 
   .section-title {

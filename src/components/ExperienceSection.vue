@@ -29,7 +29,7 @@ defineProps({
 
 <style scoped>
 .experience {
-  padding-bottom: 64px;
+  padding-bottom: 48px;
 }
 
 .section-title {
@@ -112,7 +112,7 @@ defineProps({
 
 @media (min-width: 1024px) {
   .experience {
-    padding-bottom: 80px;
+    padding-bottom: 60px;
   }
 
   .section-title {

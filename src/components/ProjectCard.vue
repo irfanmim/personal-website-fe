@@ -1,61 +1,93 @@
 <template>
-  <div class="card" v-reveal>
-    <h4 class="card-title">{{ title }}</h4>
-    <p class="card-desc">{{ description }}</p>
-    <div class="tags">
-      <span class="tag" v-for="tag in tags" :key="tag">{{ tag }}</span>
+  <div
+    class="card"
+    v-reveal
+    @click="demo && openDemo(demo)"
+    :class="{ 'card--clickable': demo }"
+  >
+    <div class="card-image">
+      <img v-if="image" :src="image" :alt="title" />
+      <div v-else class="img-placeholder" />
     </div>
-    <div v-if="demo" class="card-links">
-      <a :href="demo" target="_blank" rel="noopener" class="card-link">Live Demo</a>
+    <div class="card-body">
+      <h4 class="card-title">{{ title }}</h4>
+      <p class="card-desc">{{ description }}</p>
+      <div class="tags">
+        <span class="tag" v-for="tag in tags" :key="tag">{{ tag }}</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 defineProps({
-  title: {
-    type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-  tags: {
-    type: Array,
-    default: () => [],
-  },
-  demo: {
-    type: String,
-    default: '',
-  },
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  tags: { type: Array, default: () => [] },
+  demo: { type: String, default: '' },
+  image: { type: String, default: '' },
 })
+
+function openDemo(url) {
+  window.open(url, '_blank', 'noopener')
+}
 </script>
 
 <style scoped>
 .card {
   border: 1px solid var(--color-border);
   border-radius: 12px;
-  padding: 28px 24px 24px;
+  overflow: hidden;
+  background: var(--color-card-bg);
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  background: var(--color-card-bg);
-  transition: box-shadow 0.2s ease, transform 0.2s ease, background 0.2s, border-color 0.2s;
+  transition: box-shadow 0.2s, transform 0.2s, background 0.2s, border-color 0.2s;
 }
 
-.card:hover {
+.card--clickable {
+  cursor: pointer;
+}
+
+.card--clickable:hover {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
 }
 
+.card-image {
+  width: 100%;
+  height: 140px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.img-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--color-pill-bg);
+}
+
+.card-body {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
 .card-title {
-  font-size: 1.15rem;
+  font-size: 0.95rem;
   font-weight: 600;
+  color: var(--color-text);
 }
 
 .card-desc {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: var(--color-text-muted);
   line-height: 1.5;
 }
@@ -63,10 +95,8 @@ defineProps({
 .tags {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  margin-top: auto;
-  padding-top: 4px;
+  gap: 5px;
+  margin-top: 4px;
 }
 
 .tag {
@@ -74,30 +104,10 @@ defineProps({
   align-items: center;
   background: var(--color-tag-bg);
   color: var(--color-tag-text);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 500;
-  line-height: 1;
-  padding: 5px 12px;
+  padding: 3px 10px;
   border-radius: 999px;
   white-space: nowrap;
-}
-
-.card-links {
-  display: flex;
-  gap: 12px;
-  margin-top: 4px;
-}
-
-.card-link {
-  font-size: 0.85rem;
-  color: var(--color-text);
-  text-decoration: none;
-  border-bottom: 1px solid var(--color-text);
-  padding-bottom: 1px;
-  transition: opacity 0.15s;
-}
-
-.card-link:hover {
-  opacity: 0.5;
 }
 </style>

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import PublicView from '../views/PublicView.vue'
+import ProjectsView from '../views/ProjectsView.vue'
 import LoginView from '../views/admin/LoginView.vue'
 import DashboardView from '../views/admin/DashboardView.vue'
 
@@ -7,6 +8,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', component: PublicView },
+    { path: '/projects', component: ProjectsView },
     { path: '/admin/login', component: LoginView },
     {
       path: '/admin',

@@ -8,6 +8,9 @@
         v-bind="project"
       />
     </div>
+    <div v-if="viewAllUrl" class="view-all-wrap">
+      <a :href="viewAllUrl" class="view-all">View All →</a>
+    </div>
   </section>
 </template>
 
@@ -23,19 +26,43 @@ defineProps({
     type: Array,
     required: true,
   },
+  viewAllUrl: {
+    type: String,
+    default: '',
+  },
 })
 </script>
 
 <style scoped>
 .projects {
-  padding-bottom: 64px;
+  padding-bottom: 48px;
 }
 
 .section-title {
   font-size: 1.25rem;
   font-weight: 500;
-  
   margin-bottom: 24px;
+}
+
+.view-all-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.view-all {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-tag-text);
+  text-decoration: none;
+  border: 1.5px solid var(--color-tag-text);
+  border-radius: 8px;
+  padding: 8px 24px;
+  transition: opacity 0.15s;
+}
+
+.view-all:hover {
+  opacity: 0.7;
 }
 
 .cards {
@@ -53,7 +80,7 @@ defineProps({
 
 @media (min-width: 1024px) {
   .projects {
-    padding-bottom: 80px;
+    padding-bottom: 60px;
   }
 
   .section-title {
