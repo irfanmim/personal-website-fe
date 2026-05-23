@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="220" viewBox="0 0 400 220">
+  <rect width="400" height="220" fill="#d1fae5"/>
+  <!-- Stem -->
+  <line x1="200" y1="155" x2="200" y2="115" stroke="#059669" stroke-width="3" stroke-linecap="round"/>
+  <!-- Left branch -->
+  <line x1="200" y1="135" x2="178" y2="118" stroke="#059669" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Right branch -->
+  <line x1="200" y1="128" x2="222" y2="112" stroke="#059669" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Main leaf -->
+  <path d="M200 115 C185 95 170 80 182 65 C192 52 210 58 215 72 C222 90 210 108 200 115Z" fill="#10b981" opacity="0.85"/>
+  <!-- Left leaf -->
+  <path d="M178 118 C165 108 152 96 158 84 C163 74 176 76 180 86 C184 97 181 110 178 118Z" fill="#34d399" opacity="0.8"/>
+  <!-- Right leaf -->
+  <path d="M222 112 C232 100 242 88 237 76 C232 66 220 68 217 78 C213 90 217 103 222 112Z" fill="#34d399" opacity="0.8"/>
+  <!-- Ground arc -->
+  <path d="M172 156 Q200 148 228 156" stroke="#059669" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>
