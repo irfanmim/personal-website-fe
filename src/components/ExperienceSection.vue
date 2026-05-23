@@ -17,7 +17,7 @@
     </div>
     <p v-if="viewMoreUrl" class="more-hint">and more...</p>
     <div v-if="viewMoreUrl" class="view-more-wrap">
-      <a :href="viewMoreUrl" class="view-more">View More →</a>
+      <a :href="viewMoreUrl" class="view-more">View More on LinkedIn →</a>
     </div>
   </section>
 </template>
