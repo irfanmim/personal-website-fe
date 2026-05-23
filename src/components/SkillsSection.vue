@@ -49,7 +49,7 @@ defineProps({
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #888;
+  color: var(--color-text-faint);
 }
 
 .pills {
@@ -59,12 +59,12 @@ defineProps({
 }
 
 .pill {
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--color-pill-bg);
+  color: var(--color-pill-text);
   font-size: 0.875rem;
   padding: 5px 14px;
   border-radius: 999px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-pill-border);
 }
 
 @media (min-width: 640px) {

@@ -1,9 +1,9 @@
 <template>
-  <footer class="contact">
+  <footer class="contact" v-reveal>
     <h3 class="section-title">Contact</h3>
     <p class="tagline">Have a role in mind? Let's connect.</p>
     <div class="links">
-<a :href="linkedin" target="_blank" rel="noopener" class="link">LinkedIn</a>
+      <a :href="linkedin" target="_blank" rel="noopener" class="link">LinkedIn</a>
       <a :href="github" target="_blank" rel="noopener" class="link">GitHub</a>
     </div>
     <a v-if="cvUrl" :href="cvUrl" download class="cv-btn">Download CV</a>
@@ -15,7 +15,7 @@
 const year = '2025'
 
 defineProps({
-linkedin: {
+  linkedin: {
     type: String,
     required: true,
   },
@@ -32,35 +32,37 @@ linkedin: {
 
 <style scoped>
 .contact {
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-border);
   padding: 64px 0 48px;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 20px;
 }
 
 .section-title {
   font-size: 1.25rem;
   font-weight: 500;
-  
 }
 
 .tagline {
   font-size: 0.95rem;
-  color: #555;
+  color: var(--color-text-muted);
 }
 
 .links {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
 }
 
 .link {
   font-size: 0.95rem;
-  color: #1a1a1a;
+  color: var(--color-text);
   text-decoration: none;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid var(--color-text);
   padding-bottom: 1px;
   transition: opacity 0.15s;
 }
@@ -71,9 +73,8 @@ linkedin: {
 
 .cv-btn {
   display: inline-block;
-  align-self: flex-start;
-  background: #1a1a1a;
-  color: #fff;
+  background: var(--color-text);
+  color: var(--color-bg);
   font-size: 0.875rem;
   padding: 10px 24px;
   border-radius: 6px;
@@ -87,7 +88,7 @@ linkedin: {
 
 .footer-note {
   font-size: 0.8rem;
-  color: #aaa;
+  color: var(--color-text-footer);
   margin-top: 12px;
 }
 

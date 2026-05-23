@@ -2,7 +2,7 @@
   <section class="experience">
     <h3 class="section-title">Experience</h3>
     <div class="entries">
-      <div class="entry" v-for="exp in experiences" :key="exp.role">
+      <div class="entry" v-for="exp in experiences" :key="exp.role" v-reveal>
         <div class="role-label">{{ exp.role }}</div>
         <div class="company-list">
           <div class="company-item" v-for="c in exp.companies" :key="c.company + c.period">
@@ -53,7 +53,7 @@ defineProps({
 .role-label {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--color-text);
 }
 
 .company-list {
@@ -61,7 +61,7 @@ defineProps({
   flex-direction: column;
   gap: 20px;
   padding-left: 24px;
-  border-left: 2px solid #e5e7eb;
+  border-left: 2px solid var(--color-rail);
   margin-left: 4px;
 }
 
@@ -80,18 +80,18 @@ defineProps({
 .company-name {
   font-size: 1rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--color-text);
 }
 
 .company-period {
   font-size: 0.82rem;
-  color: #999;
+  color: var(--color-text-dim);
   letter-spacing: 0.02em;
 }
 
 .company-summary {
   font-size: 0.92rem;
-  color: #555;
+  color: var(--color-text-muted);
   line-height: 1.65;
   max-width: 65ch;
 }

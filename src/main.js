@@ -1,4 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import { vReveal } from './directives/vReveal.js'
 
-createApp(App).mount('#app')
+const app = createApp(App)
+app.directive('reveal', vReveal)
+app.mount('#app')

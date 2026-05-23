@@ -41,7 +41,7 @@ defineProps({
 
 .hero-role {
   font-size: 1.1rem;
-  color: #333;
+  color: var(--color-text-muted);
 }
 
 @media (min-width: 640px) {

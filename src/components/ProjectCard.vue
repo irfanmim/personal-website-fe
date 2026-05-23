@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card" v-reveal>
     <h4 class="card-title">{{ title }}</h4>
     <p class="card-desc">{{ description }}</p>
     <div class="tags">
@@ -34,13 +34,19 @@ defineProps({
 
 <style scoped>
 .card {
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 28px 24px 24px;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  background: #fff;
+  background: var(--color-card-bg);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, background 0.2s, border-color 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 
 .card-title {
@@ -50,7 +56,7 @@ defineProps({
 
 .card-desc {
   font-size: 0.95rem;
-  color: #444;
+  color: var(--color-text-muted);
   line-height: 1.5;
 }
 
@@ -66,8 +72,8 @@ defineProps({
 .tag {
   display: inline-flex;
   align-items: center;
-  background: #dbeafe;
-  color: #3b82f6;
+  background: var(--color-tag-bg);
+  color: var(--color-tag-text);
   font-size: 0.78rem;
   font-weight: 500;
   line-height: 1;
@@ -84,9 +90,9 @@ defineProps({
 
 .card-link {
   font-size: 0.85rem;
-  color: #1a1a1a;
+  color: var(--color-text);
   text-decoration: none;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid var(--color-text);
   padding-bottom: 1px;
   transition: opacity 0.15s;
 }
