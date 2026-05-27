@@ -28,7 +28,9 @@
           />
         </div>
         <p v-if="error" class="error-msg">{{ error }}</p>
-        <button type="submit" class="login-btn">Login</button>
+        <button type="submit" class="login-btn" :disabled="loading">
+          {{ loading ? 'Logging in…' : 'Login' }}
+        </button>
       </form>
     </div>
   </div>
@@ -37,22 +39,28 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import client from '../../api/client.js'
 
 const router = useRouter()
 const form = reactive({ username: '', password: '' })
 const error = ref('')
+const loading = ref(false)
 
-/* Replace with real API authentication when backend is ready */
-const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME || 'admin'
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'admin'
-
-function handleLogin() {
-  if (form.username === ADMIN_USERNAME && form.password === ADMIN_PASSWORD) {
-    sessionStorage.setItem('admin_token', 'authenticated')
+async function handleLogin() {
+  error.value = ''
+  loading.value = true
+  try {
+    const { data } = await client.post('/api/auth/login', {
+      username: form.username,
+      password: form.password,
+    })
+    localStorage.setItem('admin_jwt', data.token)
     router.push('/admin')
-  } else {
+  } catch {
     error.value = 'Invalid username or password.'
     form.password = ''
+  } finally {
+    loading.value = false
   }
 }
 </script>

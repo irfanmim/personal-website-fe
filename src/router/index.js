@@ -15,12 +15,17 @@ const router = createRouter({
       component: DashboardView,
       meta: { requiresAuth: true },
     },
+    {
+      path: '/admin/settings',
+      component: () => import('../views/admin/SettingsView.vue'),
+      meta: { requiresAuth: true },
+    },
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })
 
 router.beforeEach((to) => {
-  const authenticated = sessionStorage.getItem('admin_token') === 'authenticated'
+  const authenticated = !!localStorage.getItem('admin_jwt')
   if (to.meta.requiresAuth && !authenticated) return '/admin/login'
   if (to.path === '/admin/login' && authenticated) return '/admin'
 })

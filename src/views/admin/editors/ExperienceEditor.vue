@@ -3,8 +3,10 @@
     <div class="editor-header">
       <h2 class="editor-title">Experience</h2>
       <div class="editor-actions">
-        <button class="btn btn-ghost" @click="discard">Discard</button>
-        <button class="btn btn-primary" @click="save">Save Changes</button>
+        <button class="btn btn-ghost" @click="discard" :disabled="saving">Discard</button>
+        <button class="btn btn-primary" @click="save" :disabled="saving">
+          {{ saving ? 'Saving…' : 'Save Changes' }}
+        </button>
       </div>
     </div>
 
@@ -33,16 +35,16 @@
             <button class="btn btn-sm btn-danger" @click="removeCompany(ri, ci)">Remove</button>
           </div>
           <div class="field">
+            <label class="field-label">Position / Title</label>
+            <input v-model="company.summary" type="text" class="field-input" placeholder="e.g. Product Manager" />
+          </div>
+          <div class="field">
             <label class="field-label">Company Name</label>
             <input v-model="company.company" type="text" class="field-input" placeholder="Company name" />
           </div>
           <div class="field">
             <label class="field-label">Period</label>
             <input v-model="company.period" type="text" class="field-input" placeholder="Jan 2024 – Present" />
-          </div>
-          <div class="field">
-            <label class="field-label">Summary</label>
-            <textarea v-model="company.summary" class="field-textarea" rows="3" placeholder="What you accomplished here..." />
           </div>
         </div>
       </template>
@@ -52,6 +54,8 @@
 
     <button class="btn btn-ghost btn-full" @click="addRole">+ Add Role</button>
 
+    <p v-if="saveError" class="save-error">{{ saveError }}</p>
+
     <Transition name="toast">
       <div v-if="saved" class="toast">✓ Changes saved</div>
     </Transition>
@@ -59,8 +63,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { content, saveContent } from '../../../store/content.js'
+import { ref, watch } from 'vue'
+import { content, loadContent } from '../../../store/content.js'
+import client from '../../../api/client.js'
 
 let idCounter = 0
 
@@ -72,41 +77,113 @@ function withIds(experiences) {
   }))
 }
 
-function stripIds(experiences) {
-  return experiences.map(({ _id, companies, ...role }) => ({
-    ...role,
-    companies: companies.map(({ _id: _cid, ...c }) => c),
-  }))
-}
-
 const local = ref(withIds(JSON.parse(JSON.stringify(content.experiences))))
 const saved = ref(false)
+const saving = ref(false)
+const saveError = ref('')
+
+const stopWatch = watch(
+  () => content.experiences,
+  (fresh) => {
+    local.value = withIds(JSON.parse(JSON.stringify(fresh)))
+    stopWatch()
+  },
+)
+
+// Track deletions so we can issue the right DELETE calls on save.
+// Using plain arrays (not reactive) — we only read them inside save().
+const deletedRoleIds = []
+const deletedCompanyKeys = [] // { roleId, companyId }
 
 function addRole() {
   local.value.push({ _id: idCounter++, role: '', companies: [] })
 }
 
 function removeRole(ri) {
+  const role = local.value[ri]
+  if (role.id) deletedRoleIds.push(role.id)
   local.value.splice(ri, 1)
 }
 
 function addCompany(ri) {
-  local.value[ri].companies.push({ _id: idCounter++, company: '', period: '', summary: '' })
+  local.value[ri].companies.push({ _id: idCounter++, summary: '', company: '', period: '' })
 }
 
 function removeCompany(ri, ci) {
-  local.value[ri].companies.splice(ci, 1)
+  const role = local.value[ri]
+  const company = role.companies[ci]
+  // Only track if both role and company already exist on the backend
+  if (role.id && company.id) {
+    deletedCompanyKeys.push({ roleId: role.id, companyId: company.id })
+  }
+  role.companies.splice(ci, 1)
 }
 
-function save() {
-  content.experiences = stripIds(local.value)
-  saveContent()
-  saved.value = true
-  setTimeout(() => (saved.value = false), 2500)
+async function save() {
+  saving.value = true
+  saveError.value = ''
+  try {
+    // 1. Delete removed roles (companies cascade)
+    const deletedRoleIdSet = new Set(deletedRoleIds)
+    for (const id of deletedRoleIds) {
+      await client.delete(`/api/experiences/${id}`)
+    }
+
+    // 2. Delete removed companies from roles that still exist
+    for (const { roleId, companyId } of deletedCompanyKeys) {
+      if (!deletedRoleIdSet.has(roleId)) {
+        await client.delete(`/api/experiences/${roleId}/companies/${companyId}`)
+      }
+    }
+
+    // 3. Upsert roles and their companies in order
+    for (const role of local.value) {
+      let roleId = role.id
+      if (!roleId) {
+        const { data } = await client.post('/api/experiences', { role: role.role })
+        roleId = data.id
+        role.id = roleId
+      } else {
+        await client.put(`/api/experiences/${roleId}`, { role: role.role })
+      }
+
+      for (const company of role.companies) {
+        if (!company.id) {
+          const { data } = await client.post(`/api/experiences/${roleId}/companies`, {
+            summary: company.summary,
+            company: company.company,
+            period:  company.period,
+          })
+          company.id = data.id
+        } else {
+          await client.put(`/api/experiences/${roleId}/companies/${company.id}`, {
+            summary: company.summary,
+            company: company.company,
+            period:  company.period,
+          })
+        }
+      }
+    }
+
+    // 4. Reload store and re-sync local so IDs are fully settled
+    await loadContent()
+    local.value = withIds(JSON.parse(JSON.stringify(content.experiences)))
+    deletedRoleIds.length = 0
+    deletedCompanyKeys.length = 0
+
+    saved.value = true
+    setTimeout(() => (saved.value = false), 2500)
+  } catch {
+    saveError.value = 'Failed to save. Please try again.'
+  } finally {
+    saving.value = false
+  }
 }
 
 function discard() {
   local.value = withIds(JSON.parse(JSON.stringify(content.experiences)))
+  deletedRoleIds.length = 0
+  deletedCompanyKeys.length = 0
 }
 </script>
 

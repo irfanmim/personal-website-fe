@@ -16,12 +16,14 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import NavBar from './components/NavBar.vue'
-import { content } from './store/content.js'
+import { content, loadContent } from './store/content.js'
 import { useDarkMode } from './composables/useDarkMode.js'
 import { useActiveSection } from './composables/useActiveSection.js'
+
+onMounted(() => loadContent())
 
 const route = useRoute()
 const { isDark, toggle } = useDarkMode()

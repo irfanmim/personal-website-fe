@@ -4,10 +4,11 @@
       <h1 class="page-title">Projects</h1>
 
       <!-- Project grid -->
-      <div class="grid">
+      <p v-if="loading" class="loading-hint">Loading…</p>
+      <div v-else class="grid">
         <div
           v-for="project in visibleProjects"
-          :key="project.title"
+          :key="project.id ?? project.title"
           class="grid-card"
           @click="project.demo && openDemo(project.demo)"
           :class="{ 'grid-card--clickable': project.demo }"
@@ -27,7 +28,7 @@
       </div>
 
       <button
-        v-if="visibleCount < content.projects.length"
+        v-if="!loading && visibleCount < allProjects.length"
         class="load-more"
         @click="loadMore"
       >
@@ -38,12 +39,25 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { content } from '../store/content.js'
+import { ref, computed, onMounted } from 'vue'
+import client from '../api/client.js'
 
+const allProjects = ref([])
 const visibleCount = ref(6)
+const loading = ref(true)
 
-const visibleProjects = computed(() => content.projects.slice(0, visibleCount.value))
+const visibleProjects = computed(() => allProjects.value.slice(0, visibleCount.value))
+
+onMounted(async () => {
+  try {
+    const { data } = await client.get('/api/projects')
+    allProjects.value = data
+  } catch {
+    // If the API is unreachable, the grid stays empty
+  } finally {
+    loading.value = false
+  }
+})
 
 function loadMore() {
   visibleCount.value += 3
@@ -72,6 +86,14 @@ function openDemo(url) {
   .projects-page {
     padding: 0 80px;
   }
+}
+
+/* ── Loading hint ─────────────────────────────────────── */
+.loading-hint {
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--color-text-faint);
+  margin: 48px 0;
 }
 
 /* ── Page title ───────────────────────────────────────── */

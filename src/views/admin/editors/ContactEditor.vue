@@ -3,8 +3,10 @@
     <div class="editor-header">
       <h2 class="editor-title">Contact Section</h2>
       <div class="editor-actions">
-        <button class="btn btn-ghost" @click="discard">Discard</button>
-        <button class="btn btn-primary" @click="save">Save Changes</button>
+        <button class="btn btn-ghost" @click="discard" :disabled="saving">Discard</button>
+        <button class="btn btn-primary" @click="save" :disabled="saving">
+          {{ saving ? 'Saving…' : 'Save Changes' }}
+        </button>
       </div>
     </div>
 
@@ -49,6 +51,8 @@
       </div>
     </div>
 
+    <p v-if="saveError" class="save-error">{{ saveError }}</p>
+
     <Transition name="toast">
       <div v-if="saved" class="toast">✓ Changes saved</div>
     </Transition>
@@ -56,17 +60,32 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
-import { content, saveContent } from '../../../store/content.js'
+import { reactive, ref, watch } from 'vue'
+import { content, saveContact } from '../../../store/content.js'
 
 const local = reactive(JSON.parse(JSON.stringify(content.contact)))
 const saved = ref(false)
+const saving = ref(false)
+const saveError = ref('')
 
-function save() {
-  Object.assign(content.contact, local)
-  saveContent()
-  saved.value = true
-  setTimeout(() => (saved.value = false), 2500)
+const stopWatch = watch(
+  () => content.contact,
+  (fresh) => { Object.assign(local, fresh); stopWatch() },
+)
+
+async function save() {
+  saving.value = true
+  saveError.value = ''
+  try {
+    Object.assign(content.contact, local)
+    await saveContact()
+    saved.value = true
+    setTimeout(() => (saved.value = false), 2500)
+  } catch {
+    saveError.value = 'Failed to save. Please try again.'
+  } finally {
+    saving.value = false
+  }
 }
 
 function discard() {

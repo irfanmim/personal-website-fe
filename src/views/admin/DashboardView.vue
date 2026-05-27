@@ -21,32 +21,44 @@
 
       <div class="sidebar-footer">
         <a href="/" target="_blank" rel="noopener" class="sidebar-link">↗ View Site</a>
+        <router-link to="/admin/settings" class="sidebar-link">⚙ Settings</router-link>
         <button class="sidebar-logout" @click="logout">Logout</button>
       </div>
     </aside>
 
     <!-- Main content area -->
     <main class="admin-main">
-      <HeroEditor v-if="activeSection === 'hero'" />
-      <ProjectsEditor v-else-if="activeSection === 'projects'" />
-      <AboutEditor v-else-if="activeSection === 'about'" />
-      <ExperienceEditor v-else-if="activeSection === 'experience'" />
-      <ContactEditor v-else-if="activeSection === 'contact'" />
+      <div v-if="loadError" class="admin-load-error">
+        ⚠ {{ loadError }}
+        <button class="admin-retry" @click="init">Retry</button>
+      </div>
+      <div v-else-if="!contentReady" class="admin-loading">Loading…</div>
+      <template v-else>
+        <HeroEditor v-if="activeSection === 'hero'" />
+        <ProjectsEditor v-else-if="activeSection === 'projects'" />
+        <AboutEditor v-else-if="activeSection === 'about'" />
+        <ExperienceEditor v-else-if="activeSection === 'experience'" />
+        <ContactEditor v-else-if="activeSection === 'contact'" />
+      </template>
     </main>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import HeroEditor from './editors/HeroEditor.vue'
 import ProjectsEditor from './editors/ProjectsEditor.vue'
 import AboutEditor from './editors/AboutEditor.vue'
 import ExperienceEditor from './editors/ExperienceEditor.vue'
 import ContactEditor from './editors/ContactEditor.vue'
+import client from '../../api/client.js'
+import { content, loadContent } from '../../store/content.js'
 
 const router = useRouter()
 const activeSection = ref('hero')
+const contentReady = ref(false)
+const loadError = ref('')
 
 const sections = [
   { id: 'hero',       label: 'Hero' },
@@ -56,8 +68,24 @@ const sections = [
   { id: 'contact',    label: 'Contact' },
 ]
 
-function logout() {
-  sessionStorage.removeItem('admin_token')
+async function init() {
+  loadError.value = ''
+  contentReady.value = false
+  try {
+    const { data } = await client.get('/api/content')
+    Object.assign(content, data)
+    contentReady.value = true
+  } catch (err) {
+    loadError.value = err?.response?.data?.message
+      || `Could not reach the API (${import.meta.env.VITE_API_URL}). Check that the backend is running and CORS is configured.`
+  }
+}
+
+onMounted(init)
+
+async function logout() {
+  await client.post('/api/auth/logout').catch(() => {})
+  localStorage.removeItem('admin_jwt')
   router.push('/admin/login')
 }
 </script>

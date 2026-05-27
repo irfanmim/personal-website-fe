@@ -1,9 +1,10 @@
 import { reactive } from 'vue'
 import { projects as defaultProjects } from '../data/projects.js'
 import { experiences as defaultExperiences } from '../data/experience.js'
+import client from '../api/client.js'
 
-const STORAGE_KEY = 'site_content'
-
+// Hardcoded defaults are used as the initial state so the public site
+// renders instantly before the API response arrives.
 const defaults = {
   hero: {
     name: 'M. Irfan Maulana',
@@ -22,25 +23,36 @@ const defaults = {
   },
 }
 
-function load() {
+export const content = reactive(JSON.parse(JSON.stringify(defaults)))
+
+/** Load all content from the API and overwrite the store. Fails silently so
+ *  the public site keeps showing defaults if the API is unreachable.
+ *  Projects are fetched with ?limit=3 — the homepage only shows the top 3.
+ *  ProjectsView fetches /api/projects independently for the full list. */
+export async function loadContent() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : null
+    const [{ data }, { data: limitedProjects }] = await Promise.all([
+      client.get('/api/content'),
+      client.get('/api/projects', { params: { limit: 3 } }),
+    ])
+    Object.assign(content, data)
+    content.projects = limitedProjects
   } catch {
-    return null
+    // Keep defaults — do not surface errors on the public site
   }
 }
 
-export const content = reactive(load() ?? JSON.parse(JSON.stringify(defaults)))
-
-export function saveContent() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(content))
+export async function saveHero() {
+  const { data } = await client.put('/api/content/hero', content.hero)
+  Object.assign(content.hero, data)
 }
 
-export function resetToDefaults() {
-  const fresh = JSON.parse(JSON.stringify(defaults))
-  Object.keys(fresh).forEach((key) => {
-    content[key] = fresh[key]
-  })
-  localStorage.removeItem(STORAGE_KEY)
+export async function saveAbout() {
+  const { data } = await client.put('/api/content/about', content.about)
+  Object.assign(content.about, data)
+}
+
+export async function saveContact() {
+  const { data } = await client.put('/api/content/contact', content.contact)
+  Object.assign(content.contact, data)
 }
