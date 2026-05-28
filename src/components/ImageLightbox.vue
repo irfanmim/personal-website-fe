@@ -19,6 +19,7 @@
         <div
           class="lightbox-img-wrapper"
           :class="{ dragging: isDragging, zoomed: zoom > 1 }"
+          @click.self="handleBackdropClick"
           @mousedown="onDragStart"
           @mousemove="onDragMove"
           @mouseup="onDragEnd"
@@ -26,7 +27,7 @@
           @touchstart.passive="onTouchStart"
           @touchmove.prevent="onTouchMove"
           @touchend="onTouchEnd"
-          @dblclick="toggleZoom"
+          @dblclick.self="toggleZoom"
         >
           <img
             class="lightbox-img"
@@ -62,6 +63,7 @@ const translateX = ref(0)
 const translateY = ref(0)
 
 const isDragging = ref(false)
+const dragMoved = ref(false)
 const dragStart = ref({ x: 0, y: 0 })
 
 // Touch pinch state
@@ -76,7 +78,11 @@ function close() {
 }
 
 function handleBackdropClick() {
-  if (!isDragging.value) close()
+  if (dragMoved.value) {
+    dragMoved.value = false
+    return
+  }
+  close()
 }
 
 function zoomIn() {
@@ -124,17 +130,20 @@ function clampTranslate() {
 function onDragStart(e) {
   if (zoom.value <= 1) return
   isDragging.value = true
+  dragMoved.value = false
   dragStart.value = { x: e.clientX - translateX.value, y: e.clientY - translateY.value }
 }
 
 function onDragMove(e) {
   if (!isDragging.value) return
+  dragMoved.value = true
   translateX.value = e.clientX - dragStart.value.x
   translateY.value = e.clientY - dragStart.value.y
 }
 
 function onDragEnd() {
   isDragging.value = false
+  // dragMoved is intentionally left true here so the subsequent click event can read it
 }
 
 // Touch pinch-to-zoom
