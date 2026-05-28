@@ -12,12 +12,13 @@
           <span class="tag" v-for="tag in tags" :key="tag">{{ tag }}</span>
         </div>
         <a
-          :href="demo || undefined"
-          :target="demo ? '_blank' : undefined"
-          :rel="demo ? 'noopener' : undefined"
+          v-if="demo"
+          :href="demo"
+          target="_blank"
+          rel="noopener"
           class="demo-btn"
-          :class="{ 'demo-btn--hidden': !demo }"
         >Live Demo →</a>
+        <span v-else class="demo-soon">Live Demo Coming Soon</span>
       </div>
     </div>
   </div>
@@ -138,8 +139,16 @@ defineProps({
   opacity: 0.8;
 }
 
-.demo-btn--hidden {
-  visibility: hidden;
-  pointer-events: none;
+.demo-soon {
+  align-self: center;
+  margin-top: 16px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  background: var(--color-pill-bg);
+  border-radius: 8px;
+  padding: 8px 20px;
+  border: 1px dashed var(--color-border);
+  cursor: default;
 }
 </style>
