@@ -55,6 +55,13 @@
               <input v-model="project.demo" type="url" class="field-input" placeholder="https://..." />
               <span class="field-hint">Leave blank to hide the live demo link.</span>
             </div>
+            <div v-if="!project.demo" class="field field--inline">
+              <label class="toggle-label">
+                <input type="checkbox" v-model="project.show_demo_soon" class="toggle-input" />
+                <span class="toggle-text">Show "Live Demo Coming Soon" badge</span>
+              </label>
+              <span class="field-hint">Only visible when no demo URL is set.</span>
+            </div>
             <div class="field">
               <label class="field-label">Image</label>
               <img
@@ -135,7 +142,7 @@ function toggleEdit(localId) {
 }
 
 function addProject() {
-  const newItem = { _id: idCounter++, title: '', description: '', tags: [], demo: '', image: '' }
+  const newItem = { _id: idCounter++, title: '', description: '', tags: [], demo: '', show_demo_soon: false, image: '' }
   local.value.push(newItem)
   editingId.value = newItem._id
 }
@@ -182,6 +189,7 @@ async function save() {
         form.append('description', payload.description)
         payload.tags.forEach(t => form.append('tags[]', t))
         if (payload.demo) form.append('demo', payload.demo)
+        form.append('show_demo_soon', payload.show_demo_soon ? '1' : '0')
         if (pendingFiles.has(project._id)) form.append('image', pendingFiles.get(project._id))
         const { data } = await client.post(`/api/projects/${payload.id}`, form)
         project.image = data.image
@@ -194,10 +202,11 @@ async function save() {
           form.append('description', payload.description)
           payload.tags.forEach(t => form.append('tags[]', t))
           if (payload.demo) form.append('demo', payload.demo)
+          form.append('show_demo_soon', payload.show_demo_soon ? '1' : '0')
           form.append('image', file)
           ;({ data } = await client.post('/api/projects', form))
         } else {
-          ;({ data } = await client.post('/api/projects', payload))
+          ;({ data } = await client.post('/api/projects', { ...payload, show_demo_soon: payload.show_demo_soon ?? false }))
         }
         project.id    = data.id
         project.image = data.image
@@ -268,5 +277,30 @@ function discard() {
   justify-content: center;
   font-size: 0.78rem;
   color: #bbb;
+}
+
+.field--inline {
+  gap: 6px;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: var(--color-text, #222);
+}
+
+.toggle-input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--color-tag-text, #3366ff);
+  flex-shrink: 0;
+}
+
+.toggle-text {
+  user-select: none;
 }
 </style>

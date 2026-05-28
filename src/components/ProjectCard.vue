@@ -25,7 +25,12 @@
           rel="noopener"
           class="demo-btn"
         >Live Demo →</a>
-        <span v-else class="demo-soon">Live Demo Coming Soon</span>
+        <span
+          v-else
+          class="demo-soon"
+          :class="{ 'demo-soon--hidden': !show_demo_soon }"
+          :aria-hidden="!show_demo_soon ? 'true' : undefined"
+        >Live Demo Coming Soon</span>
       </div>
     </div>
   </div>
@@ -40,6 +45,7 @@ defineProps({
   description: { type: String, required: true },
   tags: { type: Array, default: () => [] },
   demo: { type: String, default: '' },
+  show_demo_soon: { type: Boolean, default: false },
   image: { type: String, default: '' },
 })
 
@@ -165,6 +171,10 @@ const lightboxOpen = ref(false)
   padding: 8px 20px;
   border: 1px dashed var(--color-border);
   cursor: default;
+}
+
+.demo-soon--hidden {
+  visibility: hidden;
 }
 
 @media (max-width: 540px) {
