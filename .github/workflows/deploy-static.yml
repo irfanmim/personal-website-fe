@@ -28,6 +28,8 @@ jobs:
       # 4. Build static files
       - name: Build project
         run: npm run build
+        env:
+          VITE_API_URL: ${{ secrets.API_URL }}
         # Make sure this outputs to dist/ or build/
 
       # 5. Clone static repository
