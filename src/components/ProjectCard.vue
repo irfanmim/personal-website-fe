@@ -1,10 +1,5 @@
 <template>
-  <div
-    class="card"
-    v-reveal
-    @click="demo && openDemo(demo)"
-    :class="{ 'card--clickable': demo }"
-  >
+  <div class="card" v-reveal>
     <div class="card-image">
       <img v-if="image" :src="image" :alt="title" />
       <div v-else class="img-placeholder" />
@@ -12,8 +7,17 @@
     <div class="card-body">
       <h4 class="card-title">{{ title }}</h4>
       <p class="card-desc">{{ description }}</p>
-      <div class="tags">
-        <span class="tag" v-for="tag in tags" :key="tag">{{ tag }}</span>
+      <div class="card-footer">
+        <div class="tags">
+          <span class="tag" v-for="tag in tags" :key="tag">{{ tag }}</span>
+        </div>
+        <a
+          :href="demo || undefined"
+          :target="demo ? '_blank' : undefined"
+          :rel="demo ? 'noopener' : undefined"
+          class="demo-btn"
+          :class="{ 'demo-btn--hidden': !demo }"
+        >Live Demo →</a>
       </div>
     </div>
   </div>
@@ -28,9 +32,6 @@ defineProps({
   image: { type: String, default: '' },
 })
 
-function openDemo(url) {
-  window.open(url, '_blank', 'noopener')
-}
 </script>
 
 <style scoped>
@@ -44,14 +45,15 @@ function openDemo(url) {
   transition: box-shadow 0.2s, transform 0.2s, background 0.2s, border-color 0.2s;
 }
 
-.card--clickable {
-  cursor: pointer;
-}
-
-.card--clickable:hover {
+.card:hover {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
 }
+
+[data-theme="dark"] .card:hover {
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08);
+}
+
 
 .card-image {
   width: 100%;
@@ -92,11 +94,19 @@ function openDemo(url) {
   line-height: 1.5;
 }
 
+.card-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 4px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
 .tags {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-  margin-top: 4px;
 }
 
 .tag {
@@ -109,5 +119,27 @@ function openDemo(url) {
   padding: 3px 10px;
   border-radius: 999px;
   white-space: nowrap;
+}
+
+.demo-btn {
+  align-self: center;
+  margin-top: 16px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #fff;
+  text-decoration: none;
+  background: var(--color-tag-text);
+  border-radius: 8px;
+  padding: 8px 20px;
+  transition: opacity 0.15s;
+}
+
+.demo-btn:hover {
+  opacity: 0.8;
+}
+
+.demo-btn--hidden {
+  visibility: hidden;
+  pointer-events: none;
 }
 </style>

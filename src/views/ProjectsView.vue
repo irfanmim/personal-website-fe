@@ -6,25 +6,11 @@
       <!-- Project grid -->
       <p v-if="loading" class="loading-hint">Loading…</p>
       <div v-else class="grid">
-        <div
+        <ProjectCard
           v-for="project in visibleProjects"
           :key="project.id ?? project.title"
-          class="grid-card"
-          @click="project.demo && openDemo(project.demo)"
-          :class="{ 'grid-card--clickable': project.demo }"
-        >
-          <div class="card-image">
-            <img v-if="project.image" :src="project.image" :alt="project.title" />
-            <div v-else class="img-placeholder" />
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">{{ project.title }}</h3>
-            <p class="card-desc">{{ project.description }}</p>
-            <div class="card-tags">
-              <span v-for="tag in project.tags" :key="tag" class="tag">{{ tag }}</span>
-            </div>
-          </div>
-        </div>
+          v-bind="project"
+        />
       </div>
 
       <button
@@ -41,6 +27,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import client from '../api/client.js'
+import ProjectCard from '../components/ProjectCard.vue'
 
 const allProjects = ref([])
 const visibleCount = ref(6)
@@ -61,10 +48,6 @@ onMounted(async () => {
 
 function loadMore() {
   visibleCount.value += 3
-}
-
-function openDemo(url) {
-  window.open(url, '_blank', 'noopener')
 }
 </script>
 
@@ -131,85 +114,6 @@ function openDemo(url) {
   .grid {
     grid-template-columns: repeat(3, 1fr);
   }
-}
-
-.grid-card {
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--color-card-bg);
-  display: flex;
-  flex-direction: column;
-  transition: box-shadow 0.2s, transform 0.2s, background 0.2s, border-color 0.2s;
-}
-
-.grid-card--clickable {
-  cursor: pointer;
-}
-
-.grid-card--clickable:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
-}
-
-.card-image {
-  width: 100%;
-  height: 140px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.card-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* shared placeholder */
-.img-placeholder {
-  width: 100%;
-  height: 100%;
-  background: var(--color-pill-bg);
-}
-
-.card-body {
-  padding: 16px 18px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 1;
-}
-
-.card-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.card-desc {
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
-  line-height: 1.5;
-}
-
-.card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 4px;
-}
-
-/* shared tag pill */
-.tag {
-  display: inline-flex;
-  align-items: center;
-  background: var(--color-tag-bg);
-  color: var(--color-tag-text);
-  font-size: 0.72rem;
-  font-weight: 500;
-  padding: 3px 10px;
-  border-radius: 999px;
-  white-space: nowrap;
 }
 
 /* ── Load more ────────────────────────────────────────── */

@@ -1,4 +1,4 @@
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { projects as defaultProjects } from '../data/projects.js'
 import { experiences as defaultExperiences } from '../data/experience.js'
 import client from '../api/client.js'
@@ -25,8 +25,12 @@ const defaults = {
 
 export const content = reactive(JSON.parse(JSON.stringify(defaults)))
 
-/** Load all content from the API and overwrite the store. Fails silently so
- *  the public site keeps showing defaults if the API is unreachable.
+// False until loadContent() settles (success or failure).
+// Components should gate rendering on this so defaults never flash before API data.
+export const contentReady = ref(false)
+
+/** Load all content from the API and overwrite the store.
+ *  On failure, content stays as the hardcoded defaults.
  *  Projects are fetched with ?limit=3 — the homepage only shows the top 3.
  *  ProjectsView fetches /api/projects independently for the full list. */
 export async function loadContent() {
@@ -38,7 +42,9 @@ export async function loadContent() {
     Object.assign(content, data)
     content.projects = limitedProjects
   } catch {
-    // Keep defaults — do not surface errors on the public site
+    // API unreachable — content stays as defaults
+  } finally {
+    contentReady.value = true
   }
 }
 

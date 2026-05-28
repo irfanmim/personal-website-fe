@@ -1,16 +1,18 @@
 <template>
   <div class="page">
-    <HeroSection id="home" :role="content.hero.role" />
-    <ProjectsSection id="projects" :projects="content.projects" view-all-url="/#/projects" />
-    <ExperienceSection id="experience" :experiences="content.experiences" :view-more-url="content.contact.linkedin" />
-    <AboutContactSection
-      id="about"
-      :bio="content.about.bio"
-      :linkedin="content.contact.linkedin"
-      :github="content.contact.github"
-      :instagram="content.contact.instagram"
-      :cv-url="content.contact.cvUrl"
-    />
+    <template v-if="contentReady">
+      <HeroSection id="home" :role="content.hero.role" />
+      <ProjectsSection id="projects" :projects="content.projects" view-all-url="/#/projects" />
+      <ExperienceSection id="experience" :experiences="content.experiences" :view-more-url="content.contact.linkedin" />
+      <AboutContactSection
+        id="about"
+        :bio="content.about.bio"
+        :linkedin="content.contact.linkedin"
+        :github="content.contact.github"
+        :instagram="content.contact.instagram"
+        :cv-url="content.contact.cvUrl"
+      />
+    </template>
   </div>
 </template>
 
@@ -21,7 +23,7 @@ import HeroSection from '../components/HeroSection.vue'
 import ExperienceSection from '../components/ExperienceSection.vue'
 import ProjectsSection from '../components/ProjectsSection.vue'
 import AboutContactSection from '../components/AboutContactSection.vue'
-import { content } from '../store/content.js'
+import { content, contentReady } from '../store/content.js'
 
 const route = useRoute()
 const router = useRouter()

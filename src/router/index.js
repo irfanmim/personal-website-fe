@@ -6,6 +6,7 @@ import DashboardView from '../views/admin/DashboardView.vue'
 
 const router = createRouter({
   history: createWebHashHistory(),
+  scrollBehavior: () => ({ top: 0 }),
   routes: [
     { path: '/', component: PublicView },
     { path: '/projects', component: ProjectsView },

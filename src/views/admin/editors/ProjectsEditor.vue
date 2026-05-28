@@ -43,7 +43,7 @@
               <label class="field-label">Tags</label>
               <input
                 :value="project.tags.join(', ')"
-                @input="project.tags = $event.target.value.split(',').map(t => t.trim()).filter(Boolean)"
+                @blur="project.tags = $event.target.value.split(',').map(t => t.trim()).filter(Boolean)"
                 type="text"
                 class="field-input"
                 placeholder="React, Vue, Python (comma-separated)"
@@ -56,9 +56,16 @@
               <span class="field-hint">Leave blank to hide the live demo link.</span>
             </div>
             <div class="field">
-              <label class="field-label">Image URL</label>
-              <input v-model="project.image" type="text" class="field-input" placeholder="/images/my-project.svg or https://..." />
-              <span class="field-hint">Static path or URL. Leave blank to show a placeholder.</span>
+              <label class="field-label">Image</label>
+              <img
+                v-if="imagePreviewMap[project._id] || project.image"
+                :src="imagePreviewMap[project._id] || project.image"
+                class="image-preview"
+                alt="Project image preview"
+              />
+              <div v-else class="image-preview image-preview--empty">No image</div>
+              <input type="file" accept="image/*" class="field-input" @change="onFileChange($event, project)" />
+              <span class="field-hint">Upload a new image. Existing paths are kept if no file is chosen.</span>
             </div>
           </template>
         </div>
@@ -77,9 +84,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import draggable from 'vuedraggable'
-import { content, loadContent } from '../../../store/content.js'
+import { content } from '../../../store/content.js'
 import client from '../../../api/client.js'
 
 let idCounter = 0
@@ -99,13 +106,29 @@ const reorderError = ref('')
 // Track backend IDs of projects deleted in this session
 const deletedIds = []
 
-const stopWatch = watch(
-  () => content.projects,
-  (fresh) => {
-    local.value = withIds(JSON.parse(JSON.stringify(fresh)))
-    stopWatch()
-  },
-)
+const pendingFiles    = new Map()   // _id -> File (not reactive)
+const imagePreviewMap = ref({})     // _id -> object URL string (reactive for template)
+
+function onFileChange(event, project) {
+  const file = event.target.files[0]
+  if (!file) return
+  if (imagePreviewMap.value[project._id]) URL.revokeObjectURL(imagePreviewMap.value[project._id])
+  pendingFiles.set(project._id, file)
+  imagePreviewMap.value = { ...imagePreviewMap.value, [project._id]: URL.createObjectURL(file) }
+}
+
+function clearPendingFile(localId) {
+  if (imagePreviewMap.value[localId]) URL.revokeObjectURL(imagePreviewMap.value[localId])
+  pendingFiles.delete(localId)
+  const { [localId]: _, ...rest } = imagePreviewMap.value
+  imagePreviewMap.value = rest
+}
+
+onMounted(async () => {
+  const { data } = await client.get('/api/projects')
+  content.projects = data
+  local.value = withIds(JSON.parse(JSON.stringify(data)))
+})
 
 function toggleEdit(localId) {
   editingId.value = editingId.value === localId ? null : localId
@@ -123,6 +146,7 @@ function removeProject(localId) {
   const project = local.value[idx]
   if (project.id) deletedIds.push(project.id)
   local.value.splice(idx, 1)
+  clearPendingFile(localId)
   if (editingId.value === localId) editingId.value = null
 }
 
@@ -151,13 +175,36 @@ async function save() {
     for (const project of local.value) {
       const { _id, ...payload } = project
       if (payload.id) {
-        await client.put(`/api/projects/${payload.id}`, payload)
+        // Send as POST (backend accepts PUT and POST for /{id}) so FormData with
+        // an optional image file works — PHP doesn't parse multipart for PUT.
+        const form = new FormData()
+        form.append('title', payload.title)
+        form.append('description', payload.description)
+        payload.tags.forEach(t => form.append('tags[]', t))
+        if (payload.demo) form.append('demo', payload.demo)
+        if (pendingFiles.has(project._id)) form.append('image', pendingFiles.get(project._id))
+        const { data } = await client.post(`/api/projects/${payload.id}`, form)
+        project.image = data.image
       } else {
-        const { data } = await client.post('/api/projects', payload)
+        const file = pendingFiles.get(project._id)
+        let data
+        if (file) {
+          const form = new FormData()
+          form.append('title', payload.title)
+          form.append('description', payload.description)
+          payload.tags.forEach(t => form.append('tags[]', t))
+          if (payload.demo) form.append('demo', payload.demo)
+          form.append('image', file)
+          ;({ data } = await client.post('/api/projects', form))
+        } else {
+          ;({ data } = await client.post('/api/projects', payload))
+        }
         project.id    = data.id
+        project.image = data.image
         project.order = data.order
       }
     }
+    local.value.forEach(p => clearPendingFile(p._id))
 
     // 3. Reload all projects (no limit — admin always needs the full list).
     //    loadContent() would only fetch 3 (homepage limit) so we call the
@@ -178,6 +225,7 @@ async function save() {
 }
 
 function discard() {
+  local.value.forEach(p => clearPendingFile(p._id))
   local.value = withIds(JSON.parse(JSON.stringify(content.projects)))
   deletedIds.length = 0
   editingId.value = null
@@ -201,5 +249,24 @@ function discard() {
 
 .drag-handle:active {
   cursor: grabbing;
+}
+
+.image-preview {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  background: #f5f5f5;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.image-preview--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  color: #bbb;
 }
 </style>
