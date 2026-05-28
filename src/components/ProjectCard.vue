@@ -1,9 +1,16 @@
 <template>
   <div class="card" v-reveal>
     <div class="card-image">
-      <img v-if="image" :src="image" :alt="title" />
+      <img
+        v-if="image"
+        :src="image"
+        :alt="title"
+        class="card-img"
+        @click="lightboxOpen = true"
+      />
       <div v-else class="img-placeholder" />
     </div>
+    <ImageLightbox v-if="image" v-model="lightboxOpen" :src="image" :alt="title" />
     <div class="card-body">
       <h4 class="card-title">{{ title }}</h4>
       <p class="card-desc">{{ description }}</p>
@@ -25,6 +32,9 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import ImageLightbox from './ImageLightbox.vue'
+
 defineProps({
   title: { type: String, required: true },
   description: { type: String, required: true },
@@ -33,6 +43,7 @@ defineProps({
   image: { type: String, default: '' },
 })
 
+const lightboxOpen = ref(false)
 </script>
 
 <style scoped>
@@ -67,6 +78,10 @@ defineProps({
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.card-img {
+  cursor: zoom-in;
 }
 
 .img-placeholder {
@@ -150,5 +165,14 @@ defineProps({
   padding: 8px 20px;
   border: 1px dashed var(--color-border);
   cursor: default;
+}
+
+@media (max-width: 540px) {
+  .demo-btn,
+  .demo-soon {
+    align-self: stretch;
+    text-align: center;
+    padding: 10px 20px;
+  }
 }
 </style>
