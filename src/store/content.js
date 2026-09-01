@@ -31,13 +31,13 @@ export const contentReady = ref(false)
 
 /** Load all content from the API and overwrite the store.
  *  On failure, content stays as the hardcoded defaults.
- *  Projects are fetched with ?limit=3 — the homepage only shows the top 3.
+ *  Projects are fetched with ?limit=9 — the homepage only shows up to the top 9.
  *  ProjectsView fetches /api/projects independently for the full list. */
 export async function loadContent() {
   try {
     const [{ data }, { data: limitedProjects }] = await Promise.all([
       client.get('/api/content'),
-      client.get('/api/projects', { params: { limit: 3 } }),
+      client.get('/api/projects', { params: { limit: 9 } }),
     ])
     Object.assign(content, data)
     content.projects = limitedProjects
