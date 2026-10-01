@@ -1,16 +1,19 @@
 <template>
   <div class="page">
     <template v-if="contentReady">
-      <HeroSection id="home" :role="content.hero.role" />
-      <ProjectsSection id="projects" :projects="content.projects" view-all-url="/#/projects" />
+      <HeroSection
+        id="home"
+        :tagline="content.hero.tagline"
+        :experiences="content.experiences"
+      />
+      <ProjectsSection id="projects" :projects="content.projects.slice(0, 4)" view-all-url="/#/projects" />
       <ExperienceSection id="experience" :experiences="content.experiences" :view-more-url="content.contact.linkedin" />
       <AboutContactSection
-        id="about"
         :bio="content.about.bio"
+        :name="content.hero.name"
         :linkedin="content.contact.linkedin"
         :github="content.contact.github"
         :instagram="content.contact.instagram"
-        :cv-url="content.contact.cvUrl"
       />
     </template>
   </div>
@@ -41,7 +44,7 @@ onMounted(() => {
 
 <style scoped>
 .page {
-  max-width: 1200px;
+  max-width: 1160px;
   margin: 0 auto;
   padding: 0 24px;
   min-height: 100vh;
@@ -55,7 +58,28 @@ onMounted(() => {
 
 @media (min-width: 1024px) {
   .page {
-    padding: 0 80px;
+    padding: 0 64px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .page {
+    max-width: 1240px;
+    padding: 0 72px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .page {
+    max-width: 1360px;
+    padding: 0 88px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .page {
+    max-width: 1480px;
+    padding: 0 96px;
   }
 }
 </style>

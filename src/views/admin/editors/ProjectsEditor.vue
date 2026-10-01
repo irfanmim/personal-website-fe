@@ -40,6 +40,22 @@
               <textarea v-model="project.description" class="field-textarea" rows="3" placeholder="What this project does" />
             </div>
             <div class="field">
+              <label class="field-label">Role</label>
+              <input v-model="project.role" type="text" class="field-input" placeholder="e.g. Fullstack Developer" />
+              <span class="field-hint">Your role on this project.</span>
+            </div>
+            <div class="field">
+              <label class="field-label">Highlights</label>
+              <textarea
+                :value="(project.highlights || []).join('\n')"
+                @blur="project.highlights = $event.target.value.split('\n').map(l => l.trim()).filter(Boolean)"
+                class="field-textarea"
+                rows="3"
+                placeholder="One highlight per line"
+              />
+              <span class="field-hint">One bullet point per line.</span>
+            </div>
+            <div class="field">
               <label class="field-label">Tags</label>
               <input
                 :value="project.tags.join(', ')"
@@ -142,7 +158,7 @@ function toggleEdit(localId) {
 }
 
 function addProject() {
-  const newItem = { _id: idCounter++, title: '', description: '', tags: [], demo: '', show_demo_soon: false, image: '' }
+  const newItem = { _id: idCounter++, title: '', description: '', role: '', tags: [], highlights: [], demo: '', show_demo_soon: false, image: '' }
   local.value.push(newItem)
   editingId.value = newItem._id
 }
@@ -187,7 +203,9 @@ async function save() {
         const form = new FormData()
         form.append('title', payload.title)
         form.append('description', payload.description)
+        form.append('role', payload.role || '')
         payload.tags.forEach(t => form.append('tags[]', t))
+        ;(payload.highlights || []).forEach(h => form.append('highlights[]', h))
         if (payload.demo) form.append('demo', payload.demo)
         form.append('show_demo_soon', payload.show_demo_soon ? '1' : '0')
         if (pendingFiles.has(project._id)) form.append('image', pendingFiles.get(project._id))
@@ -200,7 +218,9 @@ async function save() {
           const form = new FormData()
           form.append('title', payload.title)
           form.append('description', payload.description)
+          form.append('role', payload.role || '')
           payload.tags.forEach(t => form.append('tags[]', t))
+          ;(payload.highlights || []).forEach(h => form.append('highlights[]', h))
           if (payload.demo) form.append('demo', payload.demo)
           form.append('show_demo_soon', payload.show_demo_soon ? '1' : '0')
           form.append('image', file)

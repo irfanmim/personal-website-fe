@@ -15,9 +15,10 @@ export function useDarkMode() {
   }
 
   onMounted(() => {
+    // Dark is the site's primary identity, so it's the default for first-time
+    // visitors. An explicit saved choice always wins.
     const saved = localStorage.getItem('theme')
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    applyTheme(saved ? saved === 'dark' : prefersDark)
+    applyTheme(saved !== 'light')
   })
 
   return { isDark, toggle }

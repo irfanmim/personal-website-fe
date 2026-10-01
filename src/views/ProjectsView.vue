@@ -1,6 +1,9 @@
 <template>
   <div class="projects-page">
     <main class="page-content">
+      <RouterLink to="/" class="back-link">
+        <span aria-hidden="true">←</span> Back to home
+      </RouterLink>
       <h1 class="page-title">Projects</h1>
 
       <!-- Project grid -->
@@ -53,7 +56,7 @@ function loadMore() {
 
 <style scoped>
 .projects-page {
-  max-width: 1200px;
+  max-width: 1160px;
   margin: 0 auto;
   padding: 0 24px;
   min-height: 100vh;
@@ -67,32 +70,69 @@ function loadMore() {
 
 @media (min-width: 1024px) {
   .projects-page {
-    padding: 0 80px;
+    padding: 0 64px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .projects-page {
+    max-width: 1240px;
+    padding: 0 72px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .projects-page {
+    max-width: 1360px;
+    padding: 0 88px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .projects-page {
+    max-width: 1480px;
+    padding: 0 96px;
   }
 }
 
 /* ── Loading hint ─────────────────────────────────────── */
 .loading-hint {
-  text-align: center;
-  font-size: 0.88rem;
+  font-size: var(--text-sm);
   color: var(--color-text-faint);
   margin: 48px 0;
 }
 
+/* ── Back link ────────────────────────────────────────── */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 32px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.back-link:hover {
+  color: var(--color-accent-strong);
+}
+
 /* ── Page title ───────────────────────────────────────── */
 .page-title {
-  text-align: center;
-  font-size: 2rem;
-  font-weight: 400;
-  color: var(--color-text-faint);
-  margin: 40px 0 36px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-h1);
+  color: var(--color-text);
+  margin: 20px 0 36px;
   letter-spacing: -0.01em;
 }
 
 @media (min-width: 640px) {
   .page-title {
-    font-size: 2.6rem;
-    margin: 48px 0 44px;
+    font-size: var(--text-h1);
+    margin: 24px 0 44px;
   }
 }
 
@@ -116,23 +156,29 @@ function loadMore() {
   }
 }
 
+@media (min-width: 1536px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 /* ── Load more ────────────────────────────────────────── */
 .load-more {
   display: block;
-  margin: 0 auto 64px;
+  margin: 0 0 64px;
   background: none;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 10px 32px;
-  font-size: 0.88rem;
+  border-radius: 12px;
+  padding: 10px 28px;
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
   cursor: pointer;
-  font-family: system-ui, Arial, sans-serif;
-  transition: border-color 0.15s, color 0.15s;
+  font-family: var(--font-body);
+  transition: border-color 0.15s ease, color 0.15s ease;
 }
 
 .load-more:hover {
-  border-color: var(--color-text);
-  color: var(--color-text);
+  border-color: var(--color-accent);
+  color: var(--color-accent-strong);
 }
 </style>

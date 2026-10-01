@@ -22,14 +22,25 @@
         <span class="field-hint">Shown in the navbar and used as the site identity.</span>
       </div>
       <div class="field">
-        <label class="field-label">Role / Tagline</label>
+        <label class="field-label">Role</label>
         <input
           v-model="local.role"
           type="text"
           class="field-input"
           placeholder="e.g. Software Engineer | Product Manager"
         />
-        <span class="field-hint">Shown below the greeting on the homepage.</span>
+        <span class="field-hint">Shown below your name on the homepage.</span>
+      </div>
+      <div class="field">
+        <label class="field-label">Tagline</label>
+        <textarea
+          v-model="local.tagline"
+          class="field-textarea"
+          rows="2"
+          maxlength="200"
+          placeholder="e.g. Software Engineer & Product Manager — 7+ years turning ambiguous problems into shipped, used products."
+        />
+        <span class="field-hint">A one-line positioning statement shown under your role.</span>
       </div>
     </div>
 

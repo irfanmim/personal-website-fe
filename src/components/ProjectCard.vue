@@ -1,19 +1,24 @@
 <template>
-  <div class="card" v-reveal>
-    <div class="card-image">
-      <img
-        v-if="image"
-        :src="image"
-        :alt="title"
-        class="card-img"
-        @click="lightboxOpen = true"
-      />
-      <div v-else class="img-placeholder" />
+  <div
+    class="card"
+    :class="{ 'card--clickable': image }"
+    :role="image ? 'button' : undefined"
+    :tabindex="image ? 0 : undefined"
+    :aria-label="image ? `View ${title} image` : undefined"
+    @click="openImage"
+    @keydown.enter.self="openImage"
+  >
+    <div v-if="image" class="card-image">
+      <img :src="image" :alt="title" class="card-img" />
     </div>
     <ImageLightbox v-if="image" v-model="lightboxOpen" :src="image" :alt="title" />
     <div class="card-body">
-      <h4 class="card-title">{{ title }}</h4>
+      <h3 class="card-title">{{ title }}</h3>
+      <span v-if="role" class="card-role">{{ role }}</span>
       <p class="card-desc">{{ description }}</p>
+      <ul v-if="highlights && highlights.length" class="card-highlights">
+        <li v-for="(item, idx) in highlights" :key="idx">{{ item }}</li>
+      </ul>
       <div class="card-footer">
         <div class="tags">
           <span class="tag" v-for="tag in tags" :key="tag">{{ tag }}</span>
@@ -24,13 +29,14 @@
           target="_blank"
           rel="noopener"
           class="demo-btn"
-        >Live Demo →</a>
+          @click.stop
+        >View live demo</a>
         <span
           v-else
           class="demo-soon"
           :class="{ 'demo-soon--hidden': !show_demo_soon }"
           :aria-hidden="!show_demo_soon ? 'true' : undefined"
-        >Live Demo Coming Soon</span>
+        >Live demo coming soon</span>
       </div>
     </div>
   </div>
@@ -40,44 +46,45 @@
 import { ref } from 'vue'
 import ImageLightbox from './ImageLightbox.vue'
 
-defineProps({
+const props = defineProps({
   title: { type: String, required: true },
   description: { type: String, required: true },
+  role: { type: String, default: '' },
   tags: { type: Array, default: () => [] },
+  highlights: { type: Array, default: () => [] },
   demo: { type: String, default: '' },
   show_demo_soon: { type: Boolean, default: false },
   image: { type: String, default: '' },
 })
 
 const lightboxOpen = ref(false)
+
+function openImage() {
+  if (props.image) lightboxOpen.value = true
+}
 </script>
 
 <style scoped>
 .card {
   border: 1px solid var(--color-border);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   background: var(--color-card-bg);
   display: flex;
   flex-direction: column;
-  transition: box-shadow 0.2s, transform 0.2s, background 0.2s, border-color 0.2s;
+  transition: border-color 0.2s ease;
 }
 
 .card:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
 }
-
-[data-theme="dark"] .card:hover {
-  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08);
-}
-
 
 .card-image {
   width: 100%;
   height: 140px;
   overflow: hidden;
   flex-shrink: 0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .card-image img {
@@ -86,18 +93,12 @@ const lightboxOpen = ref(false)
   object-fit: cover;
 }
 
-.card-img {
+.card--clickable {
   cursor: zoom-in;
 }
 
-.img-placeholder {
-  width: 100%;
-  height: 100%;
-  background: var(--color-pill-bg);
-}
-
 .card-body {
-  padding: 16px 18px 18px;
+  padding: 18px 20px 20px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -105,13 +106,35 @@ const lightboxOpen = ref(false)
 }
 
 .card-title {
-  font-size: 0.95rem;
+  font-family: var(--font-display);
   font-weight: 600;
+  font-size: var(--text-h3);
   color: var(--color-text);
 }
 
+.card-role {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
 .card-desc {
-  font-size: 0.85rem;
+  font-size: var(--text-body);
+  color: var(--color-text-muted);
+  line-height: 1.55;
+  margin-top: 4px;
+}
+
+.card-highlights {
+  margin: 0;
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.card-highlights li {
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
   line-height: 1.5;
 }
@@ -128,61 +151,42 @@ const lightboxOpen = ref(false)
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 6px;
 }
 
 .tag {
-  display: inline-flex;
-  align-items: center;
-  background: var(--color-tag-bg);
-  color: var(--color-tag-text);
-  font-size: 0.72rem;
-  font-weight: 500;
-  padding: 3px 10px;
-  border-radius: 999px;
-  white-space: nowrap;
+  font-size: var(--text-xs);
+  color: var(--color-text-dim);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 2px 8px;
 }
 
 .demo-btn {
   align-self: center;
   margin-top: 16px;
-  font-size: 0.78rem;
+  font-size: var(--text-sm);
   font-weight: 500;
-  color: #fff;
+  color: var(--color-accent-ink);
+  background: var(--color-accent);
   text-decoration: none;
-  background: var(--color-tag-text);
-  border-radius: 8px;
-  padding: 8px 20px;
-  transition: opacity 0.15s;
+  border-radius: 10px;
+  padding: 7px 14px;
+  transition: background 0.15s ease;
 }
 
 .demo-btn:hover {
-  opacity: 0.8;
+  background: var(--color-accent-strong);
 }
 
 .demo-soon {
   align-self: center;
   margin-top: 16px;
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: var(--color-text-muted);
-  background: var(--color-pill-bg);
-  border-radius: 8px;
-  padding: 8px 20px;
-  border: 1px dashed var(--color-border);
-  cursor: default;
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
 }
 
 .demo-soon--hidden {
   visibility: hidden;
-}
-
-@media (max-width: 540px) {
-  .demo-btn,
-  .demo-soon {
-    align-self: stretch;
-    text-align: center;
-    padding: 10px 20px;
-  }
 }
 </style>

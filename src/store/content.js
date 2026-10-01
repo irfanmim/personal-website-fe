@@ -7,11 +7,12 @@ import client from '../api/client.js'
 // renders instantly before the API response arrives.
 const defaults = {
   hero: {
-    name: 'M. Irfan Maulana',
-    role: 'Software Engineer | Product Manager | Sports Enthusiast.',
+    name: 'Muhamad Irfan Maulana',
+    role: 'Software Engineer | Full-Stack',
+    tagline: 'I’ve spent 7 years shipping production software across the full stack, including 3 years combining hands-on development with product ownership.',
   },
   about: {
-    bio: 'I am a software engineer and product manager who loves building products people actually use. Believing technology is a catalyst for business success, I combine technical expertise with product thinking to create solutions that are useful, valuable, and built to last.',
+    bio: 'I spent seven years at Visual Analysis, building an intelligence and investigation platform. As a fullstack developer I built its interactive graph visualization, a self-service query builder, and a schema-aware dynamic form system. As development team lead I architected the Insight Designer service on an event-driven microservices platform — CQRS, event sourcing, Kafka — while mentoring a team of four. Since 2023 I’ve owned the product as product manager without putting the code down: 16 production releases, CI/CD improvements, and localization for international expansion. I’m most useful where technical depth and product judgement both matter.',
   },
   projects: defaultProjects,
   experiences: defaultExperiences,

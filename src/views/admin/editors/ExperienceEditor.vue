@@ -46,6 +46,17 @@
             <label class="field-label">Period</label>
             <input v-model="company.period" type="text" class="field-input" placeholder="Jan 2024 – Present" />
           </div>
+          <div class="field">
+            <label class="field-label">Achievements</label>
+            <textarea
+              :value="(company.achievements || []).join('\n')"
+              @blur="company.achievements = $event.target.value.split('\n').map(l => l.trim()).filter(Boolean)"
+              class="field-textarea"
+              rows="3"
+              placeholder="One achievement per line"
+            />
+            <span class="field-hint">One bullet point per line. Start a line with "Owned:" to list it under Owned (product); other lines show as Built (hands-on).</span>
+          </div>
         </div>
       </template>
 
@@ -106,7 +117,7 @@ function removeRole(ri) {
 }
 
 function addCompany(ri) {
-  local.value[ri].companies.push({ _id: idCounter++, summary: '', company: '', period: '' })
+  local.value[ri].companies.push({ _id: idCounter++, summary: '', company: '', period: '', achievements: [] })
 }
 
 function removeCompany(ri, ci) {
@@ -153,6 +164,7 @@ async function save() {
             summary: company.summary,
             company: company.company,
             period:  company.period,
+            achievements: company.achievements || [],
           })
           company.id = data.id
         } else {
@@ -160,6 +172,7 @@ async function save() {
             summary: company.summary,
             company: company.company,
             period:  company.period,
+            achievements: company.achievements || [],
           })
         }
       }

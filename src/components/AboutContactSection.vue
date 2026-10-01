@@ -1,116 +1,151 @@
 <template>
-  <section class="about-contact" v-reveal>
-    <div class="left">
-      <h3 class="section-title">About</h3>
-      <p class="bio">{{ bio }}</p>
+  <section class="about-contact">
+    <div id="about" class="block block--about">
+      <h2 class="section-title">About</h2>
+      <p class="bio">
+        <span v-if="lead" class="lead">{{ lead }}</span>{{ rest }}
+      </p>
     </div>
-    <div class="contact">
-      <p class="tagline">Have a role in mind? Let's connect.</p>
+
+    <div id="contact" class="block block--contact">
+      <div>
+        <h3 class="contact-title">Get in touch</h3>
+        <p class="tagline">Have a role in mind? Let's connect.</p>
+      </div>
       <div class="links">
         <a :href="linkedin" target="_blank" rel="noopener" class="link">LinkedIn</a>
         <a :href="github" target="_blank" rel="noopener" class="link">GitHub</a>
         <a v-if="instagram" :href="instagram" target="_blank" rel="noopener" class="link">Instagram</a>
       </div>
-      <a v-if="cvUrl" :href="cvUrl" download class="cv-btn">Download CV</a>
-      <p class="footer-note">© {{ year }}</p>
     </div>
+
+    <p class="footer-note">© {{ year }} {{ name }}</p>
   </section>
 </template>
 
 <script setup>
-const year = new Date().getFullYear()
+import { computed } from 'vue'
 
-defineProps({
+const props = defineProps({
   bio: { type: String, required: true },
+  name: { type: String, default: '' },
   linkedin: { type: String, required: true },
   github: { type: String, required: true },
   instagram: { type: String, default: '' },
-  cvUrl: { type: String, default: '' },
 })
+
+const year = new Date().getFullYear()
+
+// The first sentence is set larger as a statement; the rest stays body text.
+const parts = computed(() => {
+  const match = props.bio.trim().match(/^(.+?[.!?])(?:\s+(.*))?$/s)
+  return match ? { lead: match[1], rest: match[2] ? ` ${match[2]}` : '' } : { lead: '', rest: props.bio }
+})
+const lead = computed(() => parts.value.lead)
+const rest = computed(() => parts.value.rest)
 </script>
 
 <style scoped>
+/* Same vertical rhythm as the other sections: --pad above and below the
+   content, and the same space either side of the hairline between About and
+   Get in touch as between two separate sections. */
 .about-contact {
+  --pad: 80px;
+  padding: var(--pad) 0;
   border-top: 1px solid var(--color-border);
-  padding: 48px 0 60px;
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
+}
+
+/* Title on the left, content on the right (stacks on phones). */
+.block {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.block--contact {
+  margin-top: var(--pad);
+  padding-top: var(--pad);
+  border-top: 1px solid var(--color-border);
+  align-items: center;
 }
 
 .section-title {
-  font-size: 1.25rem;
-  font-weight: 500;
-  margin-bottom: 20px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-size: var(--text-h2);
+  line-height: 1.15;
+  color: var(--color-text);
 }
 
 .bio {
-  font-size: 1rem;
+  font-size: var(--text-lead);
   color: var(--color-text-muted);
   line-height: 1.8;
-  max-width: 100%;
+  max-width: 74ch;
 }
 
-@media (min-width: 768px) {
-  .bio {
-    max-width: 62.5%;
-  }
+.lead {
+  display: block;
+  max-width: 36ch;
+  margin-bottom: 20px;
+  font-family: var(--font-display);
+  font-size: var(--text-statement);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
 }
 
-.contact {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.contact-title {
+  margin-bottom: 4px;
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 .tagline {
-  font-size: 0.95rem;
+  font-size: var(--text-lead);
   color: var(--color-text-muted);
 }
 
 .links {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 20px 28px;
 }
 
 .link {
-  font-size: 0.95rem;
+  font-size: var(--text-body);
   color: var(--color-text);
   text-decoration: none;
-  border-bottom: 1px solid var(--color-text);
-  padding-bottom: 1px;
-  transition: opacity 0.15s;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 2px;
+  transition: border-color 0.15s ease, color 0.15s ease;
 }
 
 .link:hover {
-  opacity: 0.5;
-}
-
-.cv-btn {
-  display: inline-block;
-  background: var(--color-text);
-  color: var(--color-bg);
-  font-size: 0.875rem;
-  padding: 10px 24px;
-  border-radius: 6px;
-  text-decoration: none;
-  align-self: flex-start;
-  transition: opacity 0.15s;
-}
-
-.cv-btn:hover {
-  opacity: 0.75;
+  border-color: var(--color-accent);
+  color: var(--color-accent-strong);
 }
 
 .footer-note {
-  font-size: 0.8rem;
+  margin-top: 56px;
+  font-size: var(--text-xs);
   color: var(--color-text-footer);
 }
 
-@media (min-width: 768px) {
-  .section-title {
-    font-size: 1.4rem;
+@media (min-width: 900px) {
+  .block {
+    grid-template-columns: 1fr 2fr;
+    gap: 64px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .about-contact {
+    --pad: 120px;
   }
 }
 </style>

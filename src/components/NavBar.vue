@@ -1,6 +1,11 @@
 <template>
   <nav class="navbar">
-    <span class="nav-name">{{ name }}</span>
+    <a href="/#/" class="nav-brand" :aria-label="name" @click="scrollTo($event, 'home')">
+      <svg class="nav-logo" viewBox="0 0 100 100" aria-hidden="true">
+        <rect x="3" y="3" width="94" height="94" rx="12" fill="none" stroke="currentColor" stroke-width="5" />
+        <text x="50" y="50" font-family="system-ui, Arial, sans-serif" font-size="34" font-weight="700" fill="currentColor" text-anchor="middle" dominant-baseline="central">MIM</text>
+      </svg>
+    </a>
     <div class="nav-right">
       <div class="nav-links">
         <a
@@ -8,7 +13,7 @@
           :key="link.label"
           :href="link.href"
           class="nav-link"
-          :class="{ 'nav-link--active': link.href === '#' + activeSection }"
+          :class="{ 'nav-link--active': link.id === activeSection }"
           @click="link.href.startsWith('#') ? scrollTo($event, link.href.slice(1)) : null"
         >
           {{ link.label }}
@@ -17,16 +22,10 @@
       <span class="nav-separator"></span>
       <button
         class="theme-toggle"
-        :class="{ 'theme-toggle--dark': isDark }"
         @click="$emit('toggleDark')"
         :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
       >
-        <span class="toggle-track">
-          <span class="toggle-thumb">
-            <span v-if="isDark">&#9728;</span>
-            <span v-else>&#9790;</span>
-          </span>
-        </span>
+        {{ isDark ? '☀' : '☾' }}
       </button>
       <button class="hamburger" @click="menuOpen = true" aria-label="Open menu">
         <span></span>
@@ -36,31 +35,33 @@
     </div>
   </nav>
 
-  <!-- Backdrop -->
-  <Transition name="backdrop">
-    <div v-if="menuOpen" class="drawer-backdrop" @click="menuOpen = false" />
-  </Transition>
+  <!-- Teleported: the sticky nav uses backdrop-filter, which would otherwise
+       become the containing block for these fixed-position layers. -->
+  <Teleport to="body">
+    <Transition name="backdrop">
+      <div v-if="menuOpen" class="drawer-backdrop" @click="menuOpen = false" />
+    </Transition>
 
-  <!-- Drawer -->
-  <Transition name="drawer">
-    <div v-if="menuOpen" class="drawer">
-      <div class="drawer-header">
-        <button class="drawer-close" @click="menuOpen = false" aria-label="Close menu">&#x2715;</button>
+    <Transition name="drawer">
+      <div v-if="menuOpen" class="drawer">
+        <div class="drawer-header">
+          <button class="drawer-close" @click="menuOpen = false" aria-label="Close menu">&#x2715;</button>
+        </div>
+        <nav class="drawer-links">
+          <a
+            v-for="link in links"
+            :key="link.label"
+            :href="link.href"
+            class="drawer-link"
+            :class="{ 'drawer-link--active': link.id === activeSection }"
+            @click="handleMobileLink($event, link)"
+          >
+            {{ link.label }}
+          </a>
+        </nav>
       </div>
-      <nav class="drawer-links">
-        <a
-          v-for="link in links"
-          :key="link.label"
-          :href="link.href"
-          class="drawer-link"
-          :class="{ 'drawer-link--active': link.href === '#' + activeSection }"
-          @click="handleMobileLink($event, link)"
-        >
-          {{ link.label }}
-        </a>
-      </nav>
-    </div>
-  </Transition>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup>
@@ -102,13 +103,27 @@ function handleMobileLink(e, link) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 0;
+  height: 64px;
 }
 
-.nav-name {
-  font-size: 0.95rem;
-  font-weight: 400;
-  color: var(--color-text);
+.nav-brand {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  /* --color-accent is redefined for the light theme, so the logo follows it. */
+  color: var(--color-accent);
+  transition: color 0.15s ease;
+}
+
+.nav-brand:hover,
+.nav-brand:focus-visible {
+  color: var(--color-accent-strong);
+}
+
+.nav-logo {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
 }
 
 .nav-right {
@@ -127,8 +142,8 @@ function handleMobileLink(e, link) {
 }
 
 .nav-link {
-  font-size: 0.95rem;
-  color: var(--color-text);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
   text-decoration: none;
   position: relative;
   padding-bottom: 2px;
@@ -141,10 +156,14 @@ function handleMobileLink(e, link) {
   left: 0;
   width: 100%;
   height: 1px;
-  background: var(--color-text);
+  background: var(--color-accent);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--color-text);
 }
 
 .nav-link:hover::after,
@@ -154,61 +173,30 @@ function handleMobileLink(e, link) {
 
 .nav-link--active {
   font-weight: 500;
+  color: var(--color-accent-strong);
 }
 
 /* ── Theme toggle ── */
 .theme-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  transition: opacity 0.15s;
-}
-
-.theme-toggle:hover {
-  opacity: 0.8;
-}
-
-.toggle-track {
-  position: relative;
-  width: 52px;
-  height: 28px;
-  border-radius: 999px;
-  background: #cbd5e1;
-  border: 2px solid #94a3b8;
-  transition: background 0.25s, border-color 0.25s;
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.theme-toggle--dark .toggle-track {
-  background: #f1f5f9;
-  border-color: #e2e8f0;
-}
-
-.toggle-thumb {
-  position: absolute;
-  left: 3px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
-  transition: transform 0.25s ease;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.85rem;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  font-size: 0.95rem;
   line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease, color 0.15s ease;
 }
 
-.theme-toggle--dark .toggle-thumb {
-  transform: translateX(24px);
-  background: #334155;
-  color: #ffffff;
+.theme-toggle:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent-strong);
 }
 
 /* ── Hamburger ── */
@@ -295,7 +283,7 @@ function handleMobileLink(e, link) {
 }
 
 .drawer-link {
-  font-size: 1.05rem;
+  font-size: var(--text-lead);
   color: var(--color-text);
   text-decoration: none;
   padding: 14px 0;
@@ -309,6 +297,7 @@ function handleMobileLink(e, link) {
 
 .drawer-link--active {
   font-weight: 500;
+  color: var(--color-accent-strong);
 }
 
 .drawer-enter-active,
@@ -321,20 +310,11 @@ function handleMobileLink(e, link) {
   transform: translateX(-100%);
 }
 
-/* ── Desktop (≥ 640px) ── */
-@media (min-width: 640px) {
-  .navbar {
-    padding: 28px 0;
-  }
-
-  .nav-name,
-  .nav-link {
-    font-size: 1rem;
-  }
-
+/* ── Desktop (≥ 900px) — below this, 6 links + brand don't fit on one row ── */
+@media (min-width: 900px) {
   .nav-links {
     display: flex;
-    gap: 24px;
+    gap: 22px;
   }
 
   .nav-separator {
