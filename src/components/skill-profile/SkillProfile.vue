@@ -171,7 +171,7 @@ const radarModel = computed(() => {
         color: byKey[a.pillar].color,
         softColor: byKey[a.pillar].softColor,
         height: levelToHeight(a.level),
-        note: `${byKey[a.pillar].label} · ${a.level}/10`,
+        note: byKey[a.pillar].label,
       }))
   )
   return { items, pillars }
