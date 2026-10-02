@@ -2,9 +2,9 @@
   <section class="hero">
     <div class="hero-grid">
       <div class="hero-text">
-        <p class="greeting">{{ greeting }}</p>
-        <h1 class="headline">{{ name }}</h1>
-        <p class="role-line">Product-Minded Builder | Full-Stack | 7+ Years Building Scalable Products</p>
+        <p v-if="greeting" class="greeting">{{ greeting }}</p>
+        <h1 class="headline">{{ headline }}</h1>
+        <p v-if="role" class="role-line">{{ role }}</p>
 
         <div class="actions">
           <a href="#projects" class="cta-primary" @click="scrollTo($event, 'projects')">View work</a>
@@ -34,19 +34,15 @@
 import SkillProfile from './skill-profile/SkillProfile.vue'
 
 defineProps({
-  tagline: {
-    type: String,
-    default: '',
-  },
+  greeting: { type: String, default: '' },
+  headline: { type: String, default: '' },
+  role: { type: String, default: '' },
 })
 
 function scrollTo(e, id) {
   e.preventDefault()
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
-
-const greeting = 'Hi! Welcome!'
-const name = "I'm Irfan"
 </script>
 
 <style scoped>

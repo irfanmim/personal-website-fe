@@ -12,6 +12,27 @@
 
     <div class="card">
       <div class="field">
+        <label class="field-label">Heading</label>
+        <input
+          v-model="local.heading"
+          type="text"
+          class="field-input"
+          maxlength="100"
+          placeholder="e.g. Get in touch"
+        />
+      </div>
+      <div class="field">
+        <label class="field-label">Blurb</label>
+        <input
+          v-model="local.blurb"
+          type="text"
+          class="field-input"
+          maxlength="200"
+          placeholder="e.g. Have a role in mind? Let's connect."
+        />
+        <span class="field-hint">Shown next to your links at the bottom of the homepage.</span>
+      </div>
+      <div class="field">
         <label class="field-label">LinkedIn URL</label>
         <input
           v-model="local.linkedin"

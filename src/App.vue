@@ -35,7 +35,7 @@ const { activeSection } = useActiveSection(sectionIds, () => route.path)
 
 const showNav = computed(() => !route.path.startsWith('/admin'))
 
-const navName = 'Irfan'
+const navName = computed(() => content.hero.name)
 
 // `id` is what the scroll tracking (or the current route) is matched against.
 const navLinks = [

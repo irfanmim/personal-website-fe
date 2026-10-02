@@ -20,7 +20,7 @@
           placeholder="Write a short bio about yourself..."
           style="min-height: 160px"
         />
-        <span class="field-hint">Displayed in the About section of your site.</span>
+        <span class="field-hint">Displayed in the About section of your site. The first sentence is shown larger as a lead-in.</span>
       </div>
     </div>
 

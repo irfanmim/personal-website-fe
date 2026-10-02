@@ -1,15 +1,30 @@
 <template>
   <div class="page">
-    <template v-if="contentReady">
+    <p v-if="contentError" class="content-error" role="alert">Content unavailable right now.</p>
+    <template v-else-if="contentReady">
       <HeroSection
         id="home"
-        :tagline="content.hero.tagline"
+        :greeting="content.hero.greeting"
+        :headline="content.hero.headline"
+        :role="content.hero.role"
       />
-      <ProjectsSection id="projects" :projects="content.projects.slice(0, 4)" view-all-url="/#/projects" />
-      <ExperienceSection id="experience" :experiences="content.experiences" :view-more-url="content.contact.linkedin" />
+      <ProjectsSection
+        v-if="content.projects.length"
+        id="projects"
+        :projects="content.projects.slice(0, 4)"
+        view-all-url="/#/projects"
+      />
+      <ExperienceSection
+        v-if="content.experiences.length"
+        id="experience"
+        :experiences="content.experiences"
+        :view-more-url="content.contact.linkedin"
+      />
       <AboutContactSection
         :bio="content.about.bio"
         :name="content.hero.name"
+        :heading="content.contact.heading"
+        :blurb="content.contact.blurb"
         :linkedin="content.contact.linkedin"
         :github="content.contact.github"
         :instagram="content.contact.instagram"
@@ -25,7 +40,7 @@ import HeroSection from '../components/HeroSection.vue'
 import ExperienceSection from '../components/ExperienceSection.vue'
 import ProjectsSection from '../components/ProjectsSection.vue'
 import AboutContactSection from '../components/AboutContactSection.vue'
-import { content, contentReady } from '../store/content.js'
+import { content, contentReady, contentError } from '../store/content.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -42,6 +57,12 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.content-error {
+  padding: 120px 0;
+  text-align: center;
+  color: var(--color-text-muted, inherit);
+}
+
 .page {
   max-width: 1160px;
   margin: 0 auto;

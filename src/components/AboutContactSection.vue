@@ -9,12 +9,12 @@
 
     <div id="contact" class="block block--contact">
       <div>
-        <h3 class="contact-title">Get in touch</h3>
-        <p class="tagline">Have a role in mind? Let's connect.</p>
+        <h3 v-if="heading" class="contact-title">{{ heading }}</h3>
+        <p v-if="blurb" class="tagline">{{ blurb }}</p>
       </div>
       <div class="links">
-        <a :href="linkedin" target="_blank" rel="noopener" class="link">LinkedIn</a>
-        <a :href="github" target="_blank" rel="noopener" class="link">GitHub</a>
+        <a v-if="linkedin" :href="linkedin" target="_blank" rel="noopener" class="link">LinkedIn</a>
+        <a v-if="github" :href="github" target="_blank" rel="noopener" class="link">GitHub</a>
         <a v-if="instagram" :href="instagram" target="_blank" rel="noopener" class="link">Instagram</a>
       </div>
     </div>
@@ -27,10 +27,12 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  bio: { type: String, required: true },
+  bio: { type: String, default: '' },
+  heading: { type: String, default: '' },
+  blurb: { type: String, default: '' },
   name: { type: String, default: '' },
-  linkedin: { type: String, required: true },
-  github: { type: String, required: true },
+  linkedin: { type: String, default: '' },
+  github: { type: String, default: '' },
   instagram: { type: String, default: '' },
 })
 

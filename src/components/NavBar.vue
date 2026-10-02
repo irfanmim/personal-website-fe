@@ -3,7 +3,7 @@
     <a href="/#/" class="nav-brand" :aria-label="name" @click="scrollTo($event, 'home')">
       <svg class="nav-logo" viewBox="0 0 100 100" aria-hidden="true">
         <rect x="3" y="3" width="94" height="94" rx="12" fill="none" stroke="currentColor" stroke-width="5" />
-        <text x="50" y="50" font-family="system-ui, Arial, sans-serif" font-size="34" font-weight="700" fill="currentColor" text-anchor="middle" dominant-baseline="central">MIM</text>
+        <text x="50" y="50" font-family="system-ui, Arial, sans-serif" font-size="34" font-weight="700" fill="currentColor" text-anchor="middle" dominant-baseline="central">{{ initials }}</text>
       </svg>
     </a>
     <div class="nav-right">
@@ -65,15 +65,20 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-defineProps({
-  name: { type: String, required: true },
+const props = defineProps({
+  name: { type: String, default: '' },
   links: { type: Array, default: () => [] },
   activeSection: { type: String, default: '' },
   isDark: { type: Boolean, default: false },
 })
+
+// Monogram from the display name, e.g. "M. Irfan Maulana" -> "MIM".
+const initials = computed(() =>
+  props.name.split(/\s+/).filter(Boolean).slice(0, 3).map((w) => w[0].toUpperCase()).join(''),
+)
 
 defineEmits(['toggleDark'])
 

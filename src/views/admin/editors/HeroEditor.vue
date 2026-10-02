@@ -22,6 +22,28 @@
         <span class="field-hint">Shown in the navbar and used as the site identity.</span>
       </div>
       <div class="field">
+        <label class="field-label">Greeting</label>
+        <input
+          v-model="local.greeting"
+          type="text"
+          class="field-input"
+          maxlength="100"
+          placeholder="e.g. Hi! Welcome!"
+        />
+        <span class="field-hint">Small line above the headline on the homepage.</span>
+      </div>
+      <div class="field">
+        <label class="field-label">Headline</label>
+        <input
+          v-model="local.headline"
+          type="text"
+          class="field-input"
+          maxlength="150"
+          placeholder="e.g. I'm Jane"
+        />
+        <span class="field-hint">The large heading on the homepage.</span>
+      </div>
+      <div class="field">
         <label class="field-label">Role</label>
         <input
           v-model="local.role"

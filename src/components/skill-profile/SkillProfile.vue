@@ -1,5 +1,5 @@
 <template>
-  <div class="profile">
+  <div v-if="hasEnoughAreas" class="profile">
     <div
       id="sp-panel"
       class="panel"
@@ -109,7 +109,6 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { content } from '../../store/content.js'
 import {
-  defaultSkills,
   levelToHeight,
   MIN_VISIBLE_AREAS,
   skillPillars,
@@ -146,9 +145,7 @@ const ACCENT = {
 // are left out.
 const radarModel = computed(() => {
   const source = props.areas ?? content.skills
-  let visible = source.filter((a) => a.visible)
-  // A radar needs a few axes; an over-hidden list on the public site falls back to the defaults.
-  if (!props.areas && visible.length < MIN_VISIBLE_AREAS) visible = defaultSkills.filter((a) => a.visible)
+  const visible = source.filter((a) => a.visible)
 
   const allPillars = Object.entries(skillPillars).map(([key, p]) => ({
     key,
@@ -184,6 +181,10 @@ const radarModel = computed(() => {
 const hovered = ref(null)
 const pinned = ref(null)
 const spotlight = computed(() => hovered.value ?? pinned.value)
+
+// A radar needs a few axes: on the public site, too few visible areas hides the chart.
+// The admin editor passes its own draft, which is always shown.
+const hasEnoughAreas = computed(() => !!props.areas || radarModel.value.items.length >= MIN_VISIBLE_AREAS)
 
 const viewProps = computed(() => ({
   items: radarModel.value.items,
