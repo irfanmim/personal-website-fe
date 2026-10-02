@@ -13,7 +13,7 @@
       </div>
 
       <div class="hero-viz">
-        <SkillProfile :experiences="experiences" />
+        <SkillProfile />
       </div>
     </div>
 
@@ -37,10 +37,6 @@ defineProps({
   tagline: {
     type: String,
     default: '',
-  },
-  experiences: {
-    type: Array,
-    default: () => [],
   },
 })
 

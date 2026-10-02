@@ -38,6 +38,7 @@
         <ProjectsEditor v-else-if="activeSection === 'projects'" />
         <AboutEditor v-else-if="activeSection === 'about'" />
         <ExperienceEditor v-else-if="activeSection === 'experience'" />
+        <SkillsEditor v-else-if="activeSection === 'skills'" />
         <ContactEditor v-else-if="activeSection === 'contact'" />
       </template>
     </main>
@@ -53,7 +54,8 @@ import AboutEditor from './editors/AboutEditor.vue'
 import ExperienceEditor from './editors/ExperienceEditor.vue'
 import ContactEditor from './editors/ContactEditor.vue'
 import client from '../../api/client.js'
-import { content, loadContent } from '../../store/content.js'
+import { applyContent } from '../../store/content.js'
+import SkillsEditor from './editors/SkillsEditor.vue'
 
 const router = useRouter()
 const activeSection = ref('hero')
@@ -65,6 +67,7 @@ const sections = [
   { id: 'projects',   label: 'Projects' },
   { id: 'about',      label: 'About' },
   { id: 'experience', label: 'Experience' },
+  { id: 'skills',     label: 'Skills' },
   { id: 'contact',    label: 'Contact' },
 ]
 
@@ -73,7 +76,7 @@ async function init() {
   contentReady.value = false
   try {
     const { data } = await client.get('/api/content')
-    Object.assign(content, data)
+    applyContent(data)
     contentReady.value = true
   } catch (err) {
     loadError.value = err?.response?.data?.message

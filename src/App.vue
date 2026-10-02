@@ -81,6 +81,9 @@ const currentSection = computed(() => (route.path.startsWith('/projects') ? 'pro
   --chart-tools: #34d399;
   --chart-engineering-soft: #67e8f9;
   --chart-product-soft: #c4b5fd;
+  --chart-lead: #fbbf24;
+  --chart-lead-soft: #fcd34d;
+  --chart-tools-soft: #6ee7b7;
   --gradient-depth: linear-gradient(90deg, var(--chart-engineering), #8b5cf6);
 
   --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
@@ -133,6 +136,9 @@ const currentSection = computed(() => (route.path.startsWith('/projects') ? 'pro
   --chart-tools: #059669;
   --chart-engineering-soft: #0e7490;
   --chart-product-soft: #6d28d9;
+  --chart-lead: #d97706;
+  --chart-lead-soft: #b45309;
+  --chart-tools-soft: #047857;
   --gradient-depth: linear-gradient(90deg, #0891b2, #7c3aed);
 }
 

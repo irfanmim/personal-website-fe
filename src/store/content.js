@@ -1,6 +1,7 @@
 import { reactive, ref } from 'vue'
 import { projects as defaultProjects } from '../data/projects.js'
 import { experiences as defaultExperiences } from '../data/experience.js'
+import { defaultSkills } from '../data/skillProfile.js'
 import client from '../api/client.js'
 
 // Hardcoded defaults are used as the initial state so the public site
@@ -16,6 +17,7 @@ const defaults = {
   },
   projects: defaultProjects,
   experiences: defaultExperiences,
+  skills: defaultSkills,
   contact: {
     linkedin: 'https://linkedin.com/in/irfanmim',
     github: 'https://github.com/irfanmim',
@@ -30,6 +32,14 @@ export const content = reactive(JSON.parse(JSON.stringify(defaults)))
 // Components should gate rendering on this so defaults never flash before API data.
 export const contentReady = ref(false)
 
+/** Copy an API `/content` response into the store. An empty `skills` list (nothing saved
+ *  yet) keeps the default skill areas instead of blanking the hero charts. */
+export function applyContent(data) {
+  const { skills, ...rest } = data
+  Object.assign(content, rest)
+  if (Array.isArray(skills) && skills.length) content.skills = skills
+}
+
 /** Load all content from the API and overwrite the store.
  *  On failure, content stays as the hardcoded defaults.
  *  Projects are fetched with ?limit=9 — the homepage only shows up to the top 9.
@@ -40,7 +50,7 @@ export async function loadContent() {
       client.get('/api/content'),
       client.get('/api/projects', { params: { limit: 9 } }),
     ])
-    Object.assign(content, data)
+    applyContent(data)
     content.projects = limitedProjects
   } catch {
     // API unreachable — content stays as defaults
@@ -57,6 +67,12 @@ export async function saveHero() {
 export async function saveAbout() {
   const { data } = await client.put('/api/content/about', content.about)
   Object.assign(content.about, data)
+}
+
+/** Persist a full skills list (array order = display order) and sync the store. */
+export async function saveSkills(skills) {
+  const { data } = await client.put('/api/content/skills', { skills })
+  content.skills = data
 }
 
 export async function saveContact() {

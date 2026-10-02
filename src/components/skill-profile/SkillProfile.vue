@@ -61,13 +61,33 @@
       <div class="chart-slot">
         <component
           :is="VIEWS[view]"
-          :items="items"
+          v-bind="viewProps"
           :revealed="revealed"
           @show="showTip"
           @move="moveTip"
           @hide="hideTip"
         />
       </div>
+
+      <ul class="legend">
+        <li v-for="p in radarModel.pillars" :key="p.key">
+          <button
+            type="button"
+            class="chip"
+            :class="{ on: pinned === p.key }"
+            :style="{ '--c': p.color }"
+            :aria-pressed="pinned === p.key ? 'true' : 'false'"
+            @mouseenter="hovered = p.key"
+            @mouseleave="hovered = null"
+            @focus="hovered = p.key"
+            @blur="hovered = null"
+            @click="pinned = pinned === p.key ? null : p.key"
+          >
+            <i aria-hidden="true" />
+            {{ p.label }}
+          </button>
+        </li>
+      </ul>
     </div>
 
     <Teleport to="body">
@@ -79,12 +99,7 @@
       >
         <p class="sp-tip-label">{{ tip.item.label }}</p>
         <p class="sp-tip-tech">{{ tip.item.tech.join(', ') }}</p>
-        <p
-          class="sp-tip-note"
-          :style="tip.item.isPeak ? { color: tip.item.softColor } : null"
-        >
-          {{ tip.item.isPeak ? `${tip.item.durationLabel} of ${tip.item.depthLabel}` : 'Part of my toolkit' }}
-        </p>
+        <p class="sp-tip-note" :style="{ color: tip.item.softColor }">{{ tip.item.note }}</p>
       </div>
     </Teleport>
   </div>
@@ -92,16 +107,23 @@
 
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { skillProfile } from '../../data/skillProfile.js'
-import { buildCareerTimeline, formatDuration } from '../../utils/careerTimeline.js'
+import { content } from '../../store/content.js'
+import {
+  defaultSkills,
+  levelToHeight,
+  MIN_VISIBLE_AREAS,
+  skillPillars,
+  wrapLabel,
+} from '../../data/skillProfile.js'
 import SkillProfileBar from './SkillProfileBar.vue'
 import SkillProfileRadar from './SkillProfileRadar.vue'
 import SkillProfileBento from './SkillProfileBento.vue'
 
 const props = defineProps({
-  experiences: {
+  // Skill areas to chart; defaults to the saved ones. The admin editor passes its unsaved draft.
+  areas: {
     type: Array,
-    default: () => [],
+    default: null,
   },
 })
 
@@ -112,37 +134,62 @@ const TABS = [
 ]
 const VIEWS = { bar: SkillProfileBar, radar: SkillProfileRadar, bento: SkillProfileBento }
 
-// Breadth sits at one uniform height (the crossbar); peaks rise above it in
-// proportion to real tenure, the longer track reaching the top.
-const CROSSBAR = 0.36
-
 const ACCENT = {
   engineering: { color: 'var(--chart-engineering)', soft: 'var(--chart-engineering-soft)' },
   product: { color: 'var(--chart-product)', soft: 'var(--chart-product-soft)' },
-  tools: { color: 'var(--chart-tools)', soft: 'var(--chart-tools)' },
+  delivery: { color: 'var(--chart-tools)', soft: 'var(--chart-tools-soft)' },
+  leadership: { color: 'var(--chart-lead)', soft: 'var(--chart-lead-soft)' },
 }
 
-const items = computed(() => {
-  const totals = buildCareerTimeline(props.experiences).totalsByTrack
-  const peakMonths = skillProfile.filter((s) => s.peakTrack).map((s) => totals[s.peakTrack] || 0)
-  const maxMonths = Math.max(...peakMonths, 1)
+// Pillars and areas shared by all views. Areas are grouped by pillar (in pillar order) so
+// each pillar stays one contiguous run on the radar and bar; pillars with no visible area
+// are left out.
+const radarModel = computed(() => {
+  const source = props.areas ?? content.skills
+  let visible = source.filter((a) => a.visible)
+  // A radar needs a few axes; an over-hidden list on the public site falls back to the defaults.
+  if (!props.areas && visible.length < MIN_VISIBLE_AREAS) visible = defaultSkills.filter((a) => a.visible)
 
-  return skillProfile.map((s) => {
-    const accent = ACCENT[s.accent] || ACCENT.tools
-    const months = s.peakTrack ? totals[s.peakTrack] || 0 : 0
-    const isPeak = months > 0
-    return {
-      ...s,
-      color: accent.color,
-      softColor: accent.soft,
-      isPeak,
-      months,
-      years: Math.round(months / 12),
-      durationLabel: formatDuration(months),
-      height: isPeak ? CROSSBAR + (1 - CROSSBAR) * (months / maxMonths) : CROSSBAR,
-    }
-  })
+  const allPillars = Object.entries(skillPillars).map(([key, p]) => ({
+    key,
+    label: p.label,
+    color: ACCENT[p.accent].color,
+    softColor: ACCENT[p.accent].soft,
+    badge: p.badge,
+  }))
+  const byKey = Object.fromEntries(allPillars.map((p) => [p.key, p]))
+  const pillars = allPillars.filter((p) => visible.some((a) => a.pillar === p.key))
+
+  const items = pillars.flatMap((p) =>
+    visible
+      .filter((a) => a.pillar === p.key)
+      .map((a) => ({
+        key: a.key,
+        pillar: a.pillar,
+        label: a.label,
+        lines: wrapLabel(a.label),
+        short: a.shortLabel || a.label,
+        tech: a.tech || [],
+        level: a.level,
+        color: byKey[a.pillar].color,
+        softColor: byKey[a.pillar].softColor,
+        height: levelToHeight(a.level),
+        note: `${byKey[a.pillar].label} · ${a.level}/10`,
+      }))
+  )
+  return { items, pillars }
 })
+// Pillar spotlight, shared by all three views: hovering or focusing a legend chip
+// previews a pillar, clicking pins it.
+const hovered = ref(null)
+const pinned = ref(null)
+const spotlight = computed(() => hovered.value ?? pinned.value)
+
+const viewProps = computed(() => ({
+  items: radarModel.value.items,
+  pillars: radarModel.value.pillars,
+  spotlight: spotlight.value,
+}))
 
 const view = ref('radar')
 const revealed = ref(false)
@@ -267,8 +314,56 @@ onBeforeUnmount(() => {
   padding: 20px;
 }
 
+.legend {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--color-text);
+  background: var(--color-panel-2);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.chip:hover,
+.chip.on {
+  border-color: var(--c);
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.chip i {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--c);
+}
+
+.chip small {
+  font-size: 0.7rem;
+  color: var(--color-text-faint);
+}
+
 .chart-slot {
-  height: 368px;
+  min-height: 368px;
   --chart-height: 368px;
   display: grid;
   align-items: center;
@@ -280,7 +375,7 @@ onBeforeUnmount(() => {
   }
 
   .chart-slot {
-    height: 400px;
+    min-height: 400px;
     --chart-height: 400px;
   }
 }

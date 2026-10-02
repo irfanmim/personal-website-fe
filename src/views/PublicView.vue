@@ -4,7 +4,6 @@
       <HeroSection
         id="home"
         :tagline="content.hero.tagline"
-        :experiences="content.experiences"
       />
       <ProjectsSection id="projects" :projects="content.projects.slice(0, 4)" view-all-url="/#/projects" />
       <ExperienceSection id="experience" :experiences="content.experiences" :view-more-url="content.contact.linkedin" />

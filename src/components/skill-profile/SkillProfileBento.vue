@@ -1,62 +1,41 @@
 <template>
   <div class="bento" :class="{ revealed }" role="group" aria-label="T-shaped skill profile, bento grid">
     <div
-      v-for="(peak, p) in peaks"
-      :key="peak.key"
-      class="card anchor"
-      :class="p === 0 ? 'anchor--primary' : 'anchor--secondary'"
-      :style="anchorStyle(peak, p)"
-      tabindex="0"
-      :aria-label="`${peak.label}: ${peak.durationLabel} of ${peak.depthLabel}`"
-      @mouseenter="emit('show', peak, $event)"
-      @mousemove="emit('move', $event)"
-      @mouseleave="emit('hide')"
-      @focus="emit('show', peak, $event)"
-      @blur="emit('hide')"
+      v-for="(card, c) in cards"
+      :key="card.pillar.key"
+      class="card"
+      :class="[`card--${card.pillar.key}`, { dim: isDim(card.pillar.key) }]"
+      :style="cardStyle(card.pillar, c)"
     >
-      <div class="anchor-body">
-        <span class="badge" :style="badgeStyle(peak)">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 3v18M5 8l7-5 7 5" /></svg>
-          Core depth
-        </span>
-        <p class="anchor-label">{{ peak.label }}</p>
-        <p class="anchor-tech">{{ peak.tech.join(', ') }}</p>
-      </div>
-      <div class="anchor-figure">
-        <div class="figure-row">
-          <span class="figure" :style="{ backgroundImage: `linear-gradient(120deg, ${peak.softColor}, ${peak.color})` }">{{ peak.years }}</span>
-          <span class="figure-unit">yrs in {{ peak.depthLabel.replace(' depth', '') }}</span>
-        </div>
-        <div class="heatbar">
-          <span
-            class="heatfill"
-            :style="{
-              '--w': `${(peak.months / maxMonths) * 100}%`,
-              background: `linear-gradient(90deg, ${peak.color}, ${peak.softColor})`,
-            }"
-          />
-        </div>
-      </div>
-    </div>
+      <span class="badge" :style="badgeStyle(card.pillar)">{{ card.pillar.badge }}</span>
 
-    <div
-      v-for="(item, i) in breadth"
-      :key="item.key"
-      class="card small"
-      :style="{ transitionDelay: `${(i + 2) * 60}ms` }"
-      tabindex="0"
-      :aria-label="`${item.label}: ${item.tech.join(', ')}`"
-      @mouseenter="emit('show', item, $event)"
-      @mousemove="emit('move', $event)"
-      @mouseleave="emit('hide')"
-      @focus="emit('show', item, $event)"
-      @blur="emit('hide')"
-    >
-      <div class="small-head">
-        <span class="small-label">{{ item.label }}</span>
-        <span class="dot" aria-hidden="true" />
-      </div>
-      <p class="small-tech">{{ item.tech.join(', ') }}</p>
+      <p class="card-label">{{ card.pillar.label }}</p>
+
+      <ul class="areas">
+        <li v-for="item in card.items" :key="item.key">
+          <button
+            type="button"
+            class="area"
+            :style="areaStyle(card.pillar)"
+            :aria-label="`${item.label}, ${item.level} out of 10: ${item.tech.join(', ')}`"
+            @mouseenter="emit('show', item, $event)"
+            @mousemove="emit('move', $event)"
+            @mouseleave="emit('hide')"
+            @focus="emit('show', item, $event)"
+            @blur="emit('hide')"
+          >
+            <span class="area-name">{{ item.label }}</span>
+            <span class="meter" aria-hidden="true">
+              <i
+                v-for="n in 10"
+                :key="n"
+                :class="{ on: n <= item.level }"
+                :style="n <= item.level ? { background: card.pillar.color } : null"
+              />
+            </span>
+          </button>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -66,36 +45,49 @@ import { computed } from 'vue'
 
 const props = defineProps({
   items: { type: Array, required: true },
+  pillars: { type: Array, required: true },
+  spotlight: { type: String, default: null },
   revealed: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['show', 'move', 'hide'])
 
-const peaks = computed(() => props.items.filter((i) => i.isPeak).sort((a, b) => b.months - a.months))
-const breadth = computed(() => props.items.filter((i) => !i.isPeak))
-const maxMonths = computed(() => Math.max(...peaks.value.map((p) => p.months), 1))
+const cards = computed(() =>
+  props.pillars.map((pillar) => ({
+    pillar,
+    items: props.items.filter((item) => item.pillar === pillar.key),
+  }))
+)
+
+const isDim = (pillar) => !!props.spotlight && props.spotlight !== pillar
 
 const mix = (color, pct) => `color-mix(in srgb, ${color} ${pct}%, transparent)`
 
-function anchorStyle(peak, p) {
-  const other = peaks.value[1 - p] || peak
+function cardStyle(pillar, c) {
   return {
-    transitionDelay: `${p * 60}ms`,
+    transitionDelay: `${c * 60}ms`,
     background: [
-      `radial-gradient(120% 120% at ${p === 0 ? '15% 10%' : '90% 10%'}, ${mix(peak.color, 24)}, transparent 55%)`,
-      `radial-gradient(120% 120% at ${p === 0 ? '90% 95%' : '5% 90%'}, ${mix(other.color, 18)}, transparent 55%)`,
+      `radial-gradient(120% 120% at 15% 10%, ${mix(pillar.color, 22)}, transparent 55%)`,
       'var(--color-panel-2)',
     ].join(', '),
-    borderColor: mix(peak.color, 38),
-    boxShadow: `0 0 0 1px ${mix(peak.color, 10)}, 0 20px 60px -24px ${mix(peak.color, 55)}`,
+    borderColor: mix(pillar.color, 38),
+    boxShadow: `0 0 0 1px ${mix(pillar.color, 10)}, 0 20px 60px -28px ${mix(pillar.color, 55)}`,
   }
 }
 
-function badgeStyle(peak) {
+function badgeStyle(pillar) {
   return {
-    color: peak.softColor,
-    background: mix(peak.color, 14),
-    borderColor: mix(peak.color, 30),
+    color: pillar.softColor,
+    background: mix(pillar.color, 14),
+    borderColor: mix(pillar.color, 30),
+  }
+}
+
+function areaStyle(pillar) {
+  return {
+    '--area': pillar.color,
+    background: mix(pillar.color, 10),
+    borderColor: mix(pillar.color, 32),
   }
 }
 </script>
@@ -103,19 +95,18 @@ function badgeStyle(peak) {
 <style scoped>
 .bento {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-auto-rows: minmax(104px, auto);
-  grid-auto-flow: row dense;
+  grid-template-columns: 1fr;
   gap: 12px;
 }
 
 .card {
   position: relative;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
   border-radius: 16px;
   border: 1px solid var(--color-border);
-  background: var(--color-bg);
-  cursor: pointer;
   opacity: 0;
   transform: translateY(14px) scale(0.98);
 }
@@ -123,32 +114,16 @@ function badgeStyle(peak) {
 .revealed .card {
   opacity: 1;
   transform: none;
-  transition: opacity 0.55s ease, transform 0.6s cubic-bezier(0.2, 0.85, 0.25, 1),
-    border-color 0.2s ease;
+  transition: opacity 0.55s ease, transform 0.6s cubic-bezier(0.2, 0.85, 0.25, 1);
 }
 
-.card.small:hover,
-.card.small:focus-visible {
-  border-color: var(--color-border-strong);
-}
-
-/* ── Anchor (peak) cards ── */
-.anchor {
-  grid-column: span 2;
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.anchor--primary {
-  grid-row: span 2;
+.revealed .card.dim {
+  opacity: 0.18;
+  transition: opacity 0.15s ease;
 }
 
 .badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+  align-self: flex-start;
   font-size: 0.68rem;
   font-weight: 500;
   padding: 3px 8px;
@@ -156,133 +131,75 @@ function badgeStyle(peak) {
   border: 1px solid;
 }
 
-.anchor-label {
-  margin-top: 10px;
+.card-label {
   font-family: var(--font-display);
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 600;
+  line-height: 1.2;
   color: var(--color-text);
 }
 
-.anchor-tech {
-  margin-top: 2px;
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-}
-
-.figure-row {
+.areas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
-  align-items: flex-end;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
-.figure {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 3.6rem;
-  line-height: 0.9;
-  font-variant-numeric: tabular-nums;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.figure-unit {
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: var(--color-text-muted);
-  margin-bottom: 4px;
-}
-
-.heatbar {
-  margin-top: 12px;
-  height: 6px;
-  border-radius: 999px;
-  background: var(--color-border-strong);
-  overflow: hidden;
-}
-
-.heatfill {
-  display: block;
-  height: 100%;
-  width: 0;
-  border-radius: 999px;
-}
-
-.revealed .heatfill {
-  width: var(--w);
-  transition: width 0.9s cubic-bezier(0.2, 0.85, 0.25, 1) 0.25s;
-}
-
-/* Secondary anchor is one row tall: lay it out horizontally. */
-.anchor--secondary {
-  flex-direction: row;
-  align-items: center;
-  gap: 16px;
-}
-
-.anchor--secondary .anchor-body {
-  min-width: 0;
-}
-
-.anchor--secondary .anchor-label {
-  margin-top: 6px;
-  font-size: 1.05rem;
-}
-
-.anchor--secondary .anchor-figure {
-  flex-shrink: 0;
-}
-
-.anchor--secondary .figure {
-  font-size: 2.8rem;
-}
-
-.anchor--secondary .heatbar {
-  margin-top: 8px;
-}
-
-/* ── Breadth cards ── */
-.small {
-  padding: 14px 16px;
-  display: flex;
+.area {
+  display: inline-flex;
   flex-direction: column;
-  justify-content: space-between;
-}
-
-.small-head {
-  display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.small-label {
-  font-size: 0.82rem;
+  gap: 5px;
+  font-family: inherit;
+  font-size: 0.74rem;
   font-weight: 500;
   color: var(--color-text);
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
+  padding: 5px 10px;
   border-radius: 999px;
-  margin-top: 4px;
-  flex-shrink: 0;
-  background: var(--color-text-faint);
+  border: 1px solid;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
 }
 
-.small-tech {
-  font-size: 0.7rem;
-  line-height: 1.4;
-  color: var(--color-text-faint);
+.area-name {
+  line-height: 1.2;
+  text-align: left;
 }
 
-/* Sized off the chart panel, not the viewport: the same component sits in a
-   half-width hero column on desktop and full width on tablets. */
-@container (min-width: 600px) {
+.meter {
+  display: flex;
+  gap: 2px;
+}
+
+.meter i {
+  width: 6px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--color-border-strong);
+}
+
+.area:hover {
+  border-color: var(--area) !important;
+}
+
+.area:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Sized off the chart panel, not the viewport: Engineering (five areas) takes the
+   tall left column, the other pillars stack beside it. */
+@container (min-width: 400px) {
   .bento {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1.1fr 1fr;
+    grid-auto-rows: minmax(0, auto);
+  }
+
+  .card--engineering {
+    grid-row: span 3;
   }
 }
 
@@ -291,13 +208,13 @@ function badgeStyle(peak) {
   .revealed .card {
     opacity: 1;
     transform: none;
-    transition: border-color 0.2s ease;
-  }
-
-  .heatfill,
-  .revealed .heatfill {
-    width: var(--w);
     transition: none;
   }
+
+  .card.dim,
+  .revealed .card.dim {
+    opacity: 0.18;
+  }
+
 }
 </style>
