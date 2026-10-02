@@ -94,14 +94,13 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-/* Light: same horizons at lower opacity; the grid only appears under the
-   pointer, in teal ink (a resting grid reads as ruled paper on light). */
+/* Light: same horizons at lower opacity, no square structure at all
+   (a grid reads as ruled paper on a light page). */
 [data-theme="light"] .aurora {
   --blob-opacity: 0.18;
-  --lit-opacity: 0.8;
 }
 
-[data-theme="light"] .aurora-dim {
+[data-theme="light"] .aurora-spot {
   display: none;
 }
 
@@ -161,13 +160,6 @@ onBeforeUnmount(() => {
     linear-gradient(90deg, rgba(34, 211, 238, 0.25) 1px, transparent 1px);
   -webkit-mask-image: radial-gradient(280px circle at var(--mx) var(--my), #000, transparent 70%);
   mask-image: radial-gradient(280px circle at var(--mx) var(--my), #000, transparent 70%);
-}
-
-[data-theme="light"] .aurora-lit {
-  background-image:
-    radial-gradient(circle at 0 0, rgba(8, 145, 178, 1) 2px, transparent 2.6px),
-    linear-gradient(rgba(8, 145, 178, 0.28) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(8, 145, 178, 0.28) 1px, transparent 1px);
 }
 
 @media (prefers-reduced-motion: reduce) {
