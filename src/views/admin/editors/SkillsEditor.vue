@@ -10,6 +10,9 @@
       </div>
     </div>
 
+    <!-- Right under the Save button: at the bottom of this tall editor it was off-screen. -->
+    <p v-if="saveError" class="save-error save-error--top" role="alert">{{ saveError }}</p>
+
     <div class="split">
       <div class="card">
         <div class="tabs" role="tablist">
@@ -140,6 +143,7 @@
                 v-model="techInput"
                 class="tag-input"
                 type="text"
+                maxlength="60"
                 placeholder="Add, press Enter"
                 @keydown.enter.prevent="addTech"
               />
@@ -166,8 +170,6 @@
         <p class="preview-cap">Live preview of the unsaved draft, as visitors will see it.</p>
       </div>
     </div>
-
-    <p v-if="saveError" class="save-error">{{ saveError }}</p>
 
     <Transition name="toast">
       <div v-if="saved" class="toast">✓ Changes saved</div>
@@ -310,7 +312,8 @@ async function save() {
       draft.value.map((a) => ({
         key: a.key,
         label: a.label.trim(),
-        shortLabel: a.shortLabel.trim() || a.label.trim(),
+        // The API caps shortLabel at 30 characters, so trim the label fallback to fit.
+        shortLabel: (a.shortLabel.trim() || a.label.trim()).slice(0, 30),
         pillar: a.pillar,
         level: a.level,
         tech: a.tech,
@@ -321,7 +324,12 @@ async function save() {
     saved.value = true
     setTimeout(() => (saved.value = false), 2500)
   } catch (err) {
-    saveError.value = err?.response?.data?.message || 'Failed to save. Please try again.'
+    // The API normalises validation failures to { error, details: { field: [messages] } }.
+    const data = err?.response?.data
+    const details = data?.details || data?.errors
+    saveError.value = details
+      ? Object.values(details).flat().join(' ')
+      : data?.message || data?.error || 'Failed to save. Please try again.'
   } finally {
     saving.value = false
   }
@@ -329,6 +337,10 @@ async function save() {
 </script>
 
 <style scoped>
+.admin-layout .save-error--top {
+  margin: -8px 0 16px;
+}
+
 .editor--wide {
   max-width: 1180px;
 }
