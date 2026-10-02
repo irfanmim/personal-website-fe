@@ -56,7 +56,11 @@ function scrollTo(e, id) {
 .hero::before {
   content: '';
   position: absolute;
-  inset: -40px 0 0;
+  top: -40px;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  margin-left: -50vw;
   z-index: -1;
   pointer-events: none;
   background:
