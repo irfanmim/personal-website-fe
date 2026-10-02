@@ -66,8 +66,14 @@ function scrollTo(e, id) {
 
 .hero-grid {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 48px;
   align-items: center;
+}
+
+.hero-text,
+.hero-viz {
+  min-width: 0;
 }
 
 .hero-text > * {

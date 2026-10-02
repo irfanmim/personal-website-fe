@@ -154,6 +154,12 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Backstop against stray horizontal scroll; `clip` (unlike `hidden`) keeps sticky working. */
+html,
+body {
+  overflow-x: clip;
+}
+
 body {
   font-family: var(--font-body);
   color: var(--color-text);
