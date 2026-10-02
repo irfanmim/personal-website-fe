@@ -178,6 +178,8 @@ function onPointerUp(event) {
   --label-w: 0px;
   --label-gap: 0px;
   position: relative;
+  /* Solid, so the fixed page background (grid + spotlight) doesn't show behind the chart. */
+  background: var(--color-bg);
   /* Vertical swipes still scroll the page; horizontal drags scrub. */
   touch-action: pan-y;
   user-select: none;

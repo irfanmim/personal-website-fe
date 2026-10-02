@@ -94,7 +94,7 @@ function openImage() {
 }
 
 .card--clickable {
-  cursor: zoom-in;
+  cursor: pointer;
 }
 
 .card-body {

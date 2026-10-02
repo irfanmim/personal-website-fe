@@ -1,4 +1,5 @@
 <template>
+  <BackgroundAurora v-if="showNav" />
   <header v-if="showNav" class="nav-shell">
     <div class="nav-container">
       <NavBar
@@ -21,6 +22,7 @@
 import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import NavBar from './components/NavBar.vue'
+import BackgroundAurora from './components/BackgroundAurora.vue'
 import { content, loadContent } from './store/content.js'
 import { useDarkMode } from './composables/useDarkMode.js'
 import { useActiveSection } from './composables/useActiveSection.js'
