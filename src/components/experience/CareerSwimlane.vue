@@ -209,6 +209,15 @@ function onPointerUp(event) {
   transform: none;
 }
 
+/* Phones: a year is only ~40px wide. Centred labels would collide with the
+   left-aligned first one, so every label starts at its year line instead: even
+   rhythm, all years up to the current one. */
+@media (max-width: 679px) {
+  .tick {
+    transform: none;
+  }
+}
+
 .lane {
   --lane-color: var(--chart-engineering);
   margin-top: 18px;
